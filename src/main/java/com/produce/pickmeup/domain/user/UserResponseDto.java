@@ -1,0 +1,15 @@
+package com.produce.pickmeup.domain.user;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+@Builder
+public class UserResponseDto {
+	private final long id;
+	private final String username;
+	private final String email;
+	private final String image;
+}
