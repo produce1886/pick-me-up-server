@@ -52,4 +52,8 @@ public class User {
 			.image(image)
 			.build();
 	}
+
+	public void updateImage(String image) {
+		this.image = image;
+	}
 }
