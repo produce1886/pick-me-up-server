@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    include:
+      - aws
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+  servlet:
+    multipart:
+      max-file- size: -1
+      max-request-size: -1
