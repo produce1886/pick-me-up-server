@@ -20,10 +20,9 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<Object> loginController(@RequestBody UserRequestDto userRequestDto) {
 		if (userRequestDto.getEmail() == null) {
-			return new ResponseEntity<>(
-				new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR),
-				HttpStatus.BAD_REQUEST);
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR));
 		}
-		return new ResponseEntity<>(userService.login(userRequestDto), HttpStatus.OK);
+		return ResponseEntity.ok().body(userService.login(userRequestDto));
 	}
 }
