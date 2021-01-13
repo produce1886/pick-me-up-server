@@ -85,6 +85,7 @@ public class User {
 		this.interests = user.getInterests();
 		this.isBirthPublic = user.isBirthPublic();
 		this.isRegionPublic = user.isRegionPublic();
+		this.isUniversityPublic = user.isUniversityPublic();
 		this.isInterestsPublic = user.isInterestsPublic();
 	}
 }
