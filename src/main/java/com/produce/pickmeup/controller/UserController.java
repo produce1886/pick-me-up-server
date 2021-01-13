@@ -57,4 +57,17 @@ public class UserController {
 		}
 		return ResponseEntity.ok().body(optionalUser.get().toUserInfoDto());
 	}
+
+	@PutMapping("/user/{id}")
+	public ResponseEntity<Object> updateUser(@RequestBody UserInfoDto userInfo, @PathVariable Long id){
+
+		Optional<User> optionalUser = userService.findById(id);
+		if (!optionalUser.isPresent()) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER));
+		}
+		userService.updateUserInfo(optionalUser.get(), userInfo);
+		return ResponseEntity.noContent().build();
+	}
 }
