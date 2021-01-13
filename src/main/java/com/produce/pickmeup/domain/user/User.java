@@ -72,4 +72,19 @@ public class User {
 				.isInterestsPublic(isInterestsPublic)
 				.build();
 	}
+
+	public void updateInfo(UserInfoDto user) {
+		this.email = user.getEmail();
+		this.username = user.getUsername();
+		this.image = user.getImage();
+		this.introduce = user.getIntroduce();
+		this.birth = user.getBirth();
+		this.university = user.getUniversity();
+		this.major = user.getMajor();
+		this.region = user.getRegion();
+		this.interests = user.getInterests();
+		this.isBirthPublic = user.isBirthPublic();
+		this.isRegionPublic = user.isRegionPublic();
+		this.isInterestsPublic = user.isInterestsPublic();
+	}
 }
