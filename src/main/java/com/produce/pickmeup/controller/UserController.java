@@ -5,7 +5,7 @@ import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.login.LoginRequestDto;
 import com.produce.pickmeup.domain.user.User;
-import com.produce.pickmeup.domain.user.UserInfoDto;
+import com.produce.pickmeup.domain.user.UserUpdateDto;
 import com.produce.pickmeup.service.UserService;
 import java.net.URI;
 import java.util.List;
@@ -31,7 +31,7 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<Object> loginController(@RequestBody LoginRequestDto loginRequestDto) {
-		if (loginRequestDto.getEmail() == null) {
+		if (loginRequestDto.getEmail() == null || loginRequestDto.getUsername() == null) {
 			return ResponseEntity.badRequest()
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR));
 		}
@@ -61,14 +61,18 @@ public class UserController {
 	}
 
 	@PutMapping("/user/{id}")
-	public ResponseEntity<Object> updateUser(@RequestBody UserInfoDto userInfo,
+	public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDto userUpdateDto,
 		@PathVariable Long id) {
+		if (userUpdateDto.getUsername() == null) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR));
+		}
 		Optional<User> optionalUser = userService.findById(id);
 		if (!optionalUser.isPresent()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.badRequest()
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER));
 		}
-		userService.updateUserInfo(optionalUser.get(), userInfo);
+		userService.updateUserInfo(optionalUser.get(), userUpdateDto);
 		return ResponseEntity.ok().build();
 	}
 }
