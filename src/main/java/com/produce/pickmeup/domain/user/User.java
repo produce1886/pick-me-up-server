@@ -1,6 +1,7 @@
 package com.produce.pickmeup.domain.user;
 
 
+import com.produce.pickmeup.domain.login.LoginResponseDto;
 import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,8 +43,8 @@ public class User {
 		this.image = image;
 	}
 
-	public UserResponseDto toResponseDto() {
-		return UserResponseDto.builder()
+	public LoginResponseDto toResponseDto() {
+		return LoginResponseDto.builder()
 			.id(id)
 			.email(email)
 			.username(username)

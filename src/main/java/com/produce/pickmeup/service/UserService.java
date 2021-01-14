@@ -1,6 +1,8 @@
 package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.common.ErrorCase;
+import com.produce.pickmeup.domain.login.LoginRequestDto;
+import com.produce.pickmeup.domain.login.LoginResponseDto;
 import com.produce.pickmeup.domain.user.*;
 import java.util.List;
 import java.util.Optional;
@@ -18,14 +20,14 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final S3Uploader s3Uploader;
 
-	private User addUser(UserRequestDto userRequestDto) {
+	private User addUser(LoginRequestDto userRequestDto) {
 		return userRepository.save(userRequestDto.toEntity());
 	}
 
 	@Transactional
-	public UserResponseDto login(UserRequestDto userRequestDto) {
-		User user = userRepository.findByEmail(userRequestDto.getEmail())
-			.orElseGet(() -> addUser(userRequestDto));
+	public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+		User user = userRepository.findByEmail(loginRequestDto.getEmail())
+			.orElseGet(() -> addUser(loginRequestDto));
 		return user.toResponseDto();
 	}
 
