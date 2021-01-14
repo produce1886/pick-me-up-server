@@ -14,7 +14,6 @@ import java.sql.Date;
 public class UserInfoDto {
     @Column(nullable = false)
     private final String username;
-    private final String image;
     private final String introduce;
     private final Date birth;
     private final String university;
