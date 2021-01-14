@@ -8,10 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+
+import lombok.*;
 
 @Getter
 @Entity
@@ -55,5 +53,39 @@ public class User {
 
 	public void updateImage(String image) {
 		this.image = image;
+	}
+
+	public UserInfoDto toUserInfoDto() {
+		return UserInfoDto.builder()
+				.email(email)
+				.username(username)
+				.image(image)
+				.introduce(introduce)
+				.birth(birth)
+				.university(university)
+				.major(major)
+				.region(region)
+				.interests(interests)
+				.isBirthPublic(isBirthPublic)
+				.isInterestsPublic(isInterestsPublic)
+				.isRegionPublic(isRegionPublic)
+				.isInterestsPublic(isInterestsPublic)
+				.build();
+	}
+
+	public void updateInfo(UserInfoDto user) {
+		this.email = user.getEmail();
+		this.username = user.getUsername();
+		this.image = user.getImage();
+		this.introduce = user.getIntroduce();
+		this.birth = user.getBirth();
+		this.university = user.getUniversity();
+		this.major = user.getMajor();
+		this.region = user.getRegion();
+		this.interests = user.getInterests();
+		this.isBirthPublic = user.isBirthPublic();
+		this.isRegionPublic = user.isRegionPublic();
+		this.isUniversityPublic = user.isUniversityPublic();
+		this.isInterestsPublic = user.isInterestsPublic();
 	}
 }

@@ -1,10 +1,7 @@
 package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.common.ErrorCase;
-import com.produce.pickmeup.domain.user.User;
-import com.produce.pickmeup.domain.user.UserRepository;
-import com.produce.pickmeup.domain.user.UserRequestDto;
-import com.produce.pickmeup.domain.user.UserResponseDto;
+import com.produce.pickmeup.domain.user.*;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -44,5 +41,15 @@ public class UserService {
 		}
 		user.get().updateImage(result);
 		return result;
+	}
+
+	@Transactional
+	public Optional<User> findById(Long id) {
+		return userRepository.findById(id);
+	}
+
+	@Transactional
+	public void updateUserInfo(User user, UserInfoDto userInfo) {
+		user.updateInfo(userInfo);
 	}
 }
