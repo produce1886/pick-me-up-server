@@ -67,7 +67,6 @@ public class User {
 
 	public UserInfoDto toUserInfoDto() {
 		return UserInfoDto.builder()
-				.email(email)
 				.username(username)
 				.image(image)
 				.introduce(introduce)
