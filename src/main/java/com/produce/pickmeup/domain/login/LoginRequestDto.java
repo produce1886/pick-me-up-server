@@ -1,11 +1,12 @@
-package com.produce.pickmeup.domain.user;
+package com.produce.pickmeup.domain.login;
 
+import com.produce.pickmeup.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserRequestDto {
+public class LoginRequestDto {
 	private final String email;
 	private final String username;
 	private final String image;
