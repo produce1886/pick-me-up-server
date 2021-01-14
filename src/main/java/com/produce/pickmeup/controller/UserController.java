@@ -54,7 +54,6 @@ public class UserController {
 	@GetMapping("/user/{id}")
 	public ResponseEntity<Object> getUser(@PathVariable Long id) {
 		Optional<User> optionalUser = userService.findById(id);
-
 		return optionalUser.<ResponseEntity<Object>>map(
 			user -> ResponseEntity.ok().body(user.toUserInfoDto()))
 			.orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -64,13 +63,12 @@ public class UserController {
 	@PutMapping("/user/{id}")
 	public ResponseEntity<Object> updateUser(@RequestBody UserInfoDto userInfo,
 		@PathVariable Long id) {
-
 		Optional<User> optionalUser = userService.findById(id);
 		if (!optionalUser.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER));
 		}
 		userService.updateUserInfo(optionalUser.get(), userInfo);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 }
