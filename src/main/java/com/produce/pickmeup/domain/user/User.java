@@ -67,18 +67,20 @@ public class User {
 
 	public UserInfoDto toUserInfoDto() {
 		return UserInfoDto.builder()
-				.username(username)
-				.introduce(introduce)
-				.birth(birth)
-				.university(university)
-				.major(major)
-				.region(region)
-				.interests(interests)
-				.isBirthPublic(isBirthPublic)
-				.isUniversityPublic(isUniversityPublic)
-				.isRegionPublic(isRegionPublic)
-				.isInterestsPublic(isInterestsPublic)
-				.build();
+			.email(email)
+			.username(username)
+			.image(image)
+			.introduce(introduce)
+			.birth(birth)
+			.university(university)
+			.major(major)
+			.region(region)
+			.interests(interests)
+			.isBirthPublic(isBirthPublic)
+			.isUniversityPublic(isUniversityPublic)
+			.isRegionPublic(isRegionPublic)
+			.isInterestsPublic(isInterestsPublic)
+			.build();
 	}
 
 	public void updateInfo(UserInfoDto user) {
