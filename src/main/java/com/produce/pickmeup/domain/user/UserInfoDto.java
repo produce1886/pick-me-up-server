@@ -10,23 +10,24 @@ import java.sql.Date;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class UserInfoDto {
     @Column(nullable = false)
-    private String email;
+    private final String username;
+    private final String image;
+    private final String introduce;
+    private final Date birth;
+    private final String university;
+    private final String major;
+    private final String region;
+    private final String interests;
     @Column(nullable = false)
-    private String username;
-    private String image;
-    private String introduce;
-    private Date birth;
-    private String university;
-    private String major;
-    private String region;
-    private String interests;
-    private boolean isBirthPublic;
-    private boolean isUniversityPublic;
-    private boolean isRegionPublic;
-    private boolean isInterestsPublic;
+    private final boolean isBirthPublic;
+    @Column(nullable = false)
+    private final boolean isUniversityPublic;
+    @Column(nullable = false)
+    private final boolean isRegionPublic;
+    @Column(nullable = false)
+    private final boolean isInterestsPublic;
 }
 
