@@ -84,7 +84,6 @@ public class User {
 	}
 
 	public void updateInfo(UserInfoDto user) {
-		this.email = user.getEmail();
 		this.username = user.getUsername();
 		this.image = user.getImage();
 		this.introduce = user.getIntroduce();
