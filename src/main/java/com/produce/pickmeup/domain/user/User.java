@@ -1,6 +1,7 @@
 package com.produce.pickmeup.domain.user;
 
 
+import com.produce.pickmeup.domain.login.LoginResponseDto;
 import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,10 +20,11 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String email;
 	@Column(nullable = false)
 	private String username;
+	@Column(nullable = false)
 	private String image;
 	private String introduce;
 	private Date birth;
@@ -30,9 +32,13 @@ public class User {
 	private String major;
 	private String region;
 	private String interests;
+	@Column(nullable = false)
 	private boolean isBirthPublic;
+	@Column(nullable = false)
 	private boolean isUniversityPublic;
+	@Column(nullable = false)
 	private boolean isRegionPublic;
+	@Column(nullable = false)
 	private boolean isInterestsPublic;
 
 	@Builder
@@ -40,10 +46,14 @@ public class User {
 		this.email = email;
 		this.username = username;
 		this.image = image;
+		this.isBirthPublic = true;
+		this.isUniversityPublic = true;
+		this.isRegionPublic = true;
+		this.isInterestsPublic = true;
 	}
 
-	public UserResponseDto toResponseDto() {
-		return UserResponseDto.builder()
+	public LoginResponseDto toResponseDto() {
+		return LoginResponseDto.builder()
 			.id(id)
 			.email(email)
 			.username(username)
@@ -67,14 +77,13 @@ public class User {
 				.region(region)
 				.interests(interests)
 				.isBirthPublic(isBirthPublic)
-				.isInterestsPublic(isInterestsPublic)
+				.isUniversityPublic(isUniversityPublic)
 				.isRegionPublic(isRegionPublic)
 				.isInterestsPublic(isInterestsPublic)
 				.build();
 	}
 
 	public void updateInfo(UserInfoDto user) {
-		this.email = user.getEmail();
 		this.username = user.getUsername();
 		this.image = user.getImage();
 		this.introduce = user.getIntroduce();
