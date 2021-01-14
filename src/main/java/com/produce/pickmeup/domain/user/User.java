@@ -68,7 +68,6 @@ public class User {
 	public UserInfoDto toUserInfoDto() {
 		return UserInfoDto.builder()
 				.username(username)
-				.image(image)
 				.introduce(introduce)
 				.birth(birth)
 				.university(university)
@@ -84,7 +83,6 @@ public class User {
 
 	public void updateInfo(UserInfoDto user) {
 		this.username = user.getUsername();
-		this.image = user.getImage();
 		this.introduce = user.getIntroduce();
 		this.birth = user.getBirth();
 		this.university = user.getUniversity();
