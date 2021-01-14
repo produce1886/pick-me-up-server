@@ -46,10 +46,6 @@ public class User {
 		this.email = email;
 		this.username = username;
 		this.image = image;
-		this.isBirthPublic = true;
-		this.isUniversityPublic = true;
-		this.isRegionPublic = true;
-		this.isInterestsPublic = true;
 	}
 
 	public LoginResponseDto toResponseDto() {
@@ -67,25 +63,24 @@ public class User {
 
 	public UserInfoDto toUserInfoDto() {
 		return UserInfoDto.builder()
-				.email(email)
-				.username(username)
-				.image(image)
-				.introduce(introduce)
-				.birth(birth)
-				.university(university)
-				.major(major)
-				.region(region)
-				.interests(interests)
-				.isBirthPublic(isBirthPublic)
-				.isUniversityPublic(isUniversityPublic)
-				.isRegionPublic(isRegionPublic)
-				.isInterestsPublic(isInterestsPublic)
-				.build();
+			.email(email)
+			.username(username)
+			.image(image)
+			.introduce(introduce)
+			.birth(birth)
+			.university(university)
+			.major(major)
+			.region(region)
+			.interests(interests)
+			.isBirthPublic(isBirthPublic)
+			.isUniversityPublic(isUniversityPublic)
+			.isRegionPublic(isRegionPublic)
+			.isInterestsPublic(isInterestsPublic)
+			.build();
 	}
 
-	public void updateInfo(UserInfoDto user) {
+	public void updateInfo(UserUpdateDto user) {
 		this.username = user.getUsername();
-		this.image = user.getImage();
 		this.introduce = user.getIntroduce();
 		this.birth = user.getBirth();
 		this.university = user.getUniversity();

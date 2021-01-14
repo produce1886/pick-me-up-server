@@ -51,7 +51,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public void updateUserInfo(User user, UserInfoDto userInfo) {
-		user.updateInfo(userInfo);
+	public void updateUserInfo(User user, UserUpdateDto userUpdateDto) {
+		user.updateInfo(userUpdateDto);
 	}
 }
