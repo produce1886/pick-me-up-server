@@ -46,10 +46,6 @@ public class User {
 		this.email = email;
 		this.username = username;
 		this.image = image;
-		this.isBirthPublic = true;
-		this.isUniversityPublic = true;
-		this.isRegionPublic = true;
-		this.isInterestsPublic = true;
 	}
 
 	public LoginResponseDto toResponseDto() {
@@ -83,7 +79,7 @@ public class User {
 			.build();
 	}
 
-	public void updateInfo(UserInfoDto user) {
+	public void updateInfo(UserUpdateDto user) {
 		this.username = user.getUsername();
 		this.introduce = user.getIntroduce();
 		this.birth = user.getBirth();
