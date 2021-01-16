@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class UserService {
 	private final String PROFILE_IMAGE_PATH = "profile-image";
-	private final List<String> ERROR_LIST = ErrorCase.getErrorList();
+	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
 	private final UserRepository userRepository;
 	private final S3Uploader s3Uploader;
