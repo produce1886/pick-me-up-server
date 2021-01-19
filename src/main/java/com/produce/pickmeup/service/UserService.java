@@ -3,9 +3,15 @@ package com.produce.pickmeup.service;
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.login.LoginRequestDto;
 import com.produce.pickmeup.domain.login.LoginResponseDto;
-import com.produce.pickmeup.domain.user.*;
+import com.produce.pickmeup.domain.project.Project;
+import com.produce.pickmeup.domain.project.ProjectDto;
+import com.produce.pickmeup.domain.project.ProjectListResponseDto;
+import com.produce.pickmeup.domain.user.User;
+import com.produce.pickmeup.domain.user.UserRepository;
+import com.produce.pickmeup.domain.user.UserUpdateDto;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,5 +59,15 @@ public class UserService {
 	@Transactional
 	public void updateUserInfo(User user, UserUpdateDto userUpdateDto) {
 		user.updateInfo(userUpdateDto);
+	}
+
+	@Transactional
+	public ProjectListResponseDto getUserProjects(User user) {
+		List<ProjectDto> projects = user.getProjectList().stream()
+			.map(Project::toProjectDto).collect(Collectors.toList());
+		return ProjectListResponseDto.builder()
+			.totalNum(projects.size())
+			.projectList(projects)
+			.build();
 	}
 }
