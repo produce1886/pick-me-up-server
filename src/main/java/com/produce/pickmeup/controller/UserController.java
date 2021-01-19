@@ -26,7 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @AllArgsConstructor
 public class UserController {
-	private final List<String> ERROR_LIST = ErrorCase.getErrorList();
+	private final List<String> INTERNAL_ERROR_LIST = ErrorCase.getInternalErrorList();
+	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final UserService userService;
 
 	@PostMapping("/login")
@@ -43,10 +44,15 @@ public class UserController {
 		@RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
 
 		String result = userService.updateUserImage(multipartFile, id);
-		if (ERROR_LIST.contains(result)) {
+		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, result));
+		}
+		if (REQUEST_ERROR_LIST.contains(result)) {
+			return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, result));
 		}
 		return ResponseEntity.created(URI.create(result)).build();
 	}
