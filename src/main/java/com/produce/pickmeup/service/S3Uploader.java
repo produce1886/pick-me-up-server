@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.produce.pickmeup.common.ErrorCase;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @PropertySource("classpath:application-aws.yml")
 public class S3Uploader {
+	private final static List<String> IMAGE_EXTENSIONS = Arrays
+		.asList(".jpg", ".jpeg", ".gif", ".png", ".img", ".tiff", ".heif");
 	private final static String TEMP_FILE_PATH = "src/main/resources/";
 	private final AmazonS3Client amazonS3Client;
 	@Value("${cloud.aws.s3.bucket}")
@@ -49,11 +53,14 @@ public class S3Uploader {
 	}
 
 	private String upload(File uploadFile, String dirName, String id) {
-		String fileName = dirName + "/" + id + getExtension(uploadFile.getName());
-		String uploadImageUrl = putS3(uploadFile, fileName);
-		if (!uploadFile.delete()) {
-			System.out.println(ErrorCase.FAIL_FILE_DELETE_ERROR);
+		String extension = getExtension(uploadFile.getName()).toLowerCase();
+		if (!IMAGE_EXTENSIONS.contains(extension)) {
+			deleteLocalFile(uploadFile);
+			return ErrorCase.INVALID_FILE_TYPE;
 		}
+		String fileName = dirName + "/" + id + extension;
+		String uploadImageUrl = putS3(uploadFile, fileName);
+		deleteLocalFile(uploadFile);
 		return uploadImageUrl;
 	}
 
@@ -66,5 +73,11 @@ public class S3Uploader {
 			new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(
 				CannedAccessControlList.PublicRead));
 		return amazonS3Client.getUrl(bucket, fileName).toString();
+	}
+
+	private void deleteLocalFile(File uploadFile) {
+		if (!uploadFile.delete()) {
+			System.out.println(ErrorCase.FAIL_FILE_DELETE_ERROR);
+		}
 	}
 }
