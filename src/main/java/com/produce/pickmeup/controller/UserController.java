@@ -81,4 +81,13 @@ public class UserController {
 		userService.updateUserInfo(optionalUser.get(), userUpdateDto);
 		return ResponseEntity.ok().build();
 	}
+
+	@GetMapping("/user/{id}/projects")
+	public ResponseEntity<Object> getUserProjects(@PathVariable Long id) {
+		Optional<User> optionalUser = userService.findById(id);
+		return optionalUser.<ResponseEntity<Object>>map(
+			user -> ResponseEntity.ok().body(userService.getUserProjects(user)))
+			.orElseGet(() -> ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER)));
+	}
 }
