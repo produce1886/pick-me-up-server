@@ -19,7 +19,7 @@ public class ProjectDto {
 	private final String recruitmentField;
 	private final String region;
 	private final String projectSection;
-	private final List<ProjectTagDto> projectTag;
+	private final List<ProjectTagDto> tags;
 	private final Timestamp createdDate;
 	private final Timestamp modifiedDate;
 	private final LoginResponseDto user;

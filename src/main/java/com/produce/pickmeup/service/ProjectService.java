@@ -51,7 +51,7 @@ public class ProjectService {
 				.build())
 			.getId();
 		if (!projectConnectTags(projectRequestDto.getTags(), result)) {
-			return "프로젝트 태그 등록 실패(아마도 트랜잭션 문제)";
+			return ErrorCase.FAIL_TAG_SAVE_ERROR;
 		}
 		return String.valueOf(result);
 	}
