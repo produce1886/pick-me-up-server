@@ -93,7 +93,7 @@ public class Project {
 			.projectSection(projectSection)
 			.viewNum(viewNum)
 			.commentsNum(commentsNum)
-			.projectTag(tagDtoList)
+			.tags(tagDtoList)
 			.createdDate(createdDate)
 			.modifiedDate(modifiedDate)
 			.build();
