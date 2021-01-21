@@ -9,9 +9,9 @@ import com.produce.pickmeup.domain.project.ProjectListResponseDto;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.domain.user.UserRepository;
 import com.produce.pickmeup.domain.user.UserUpdateDto;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ public class UserService {
 	private final String PROFILE_IMAGE_PATH = "profile-image";
 	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
+	private final ProjectService projectService;
 	private final UserRepository userRepository;
 	private final S3Uploader s3Uploader;
 
@@ -63,11 +64,15 @@ public class UserService {
 
 	@Transactional
 	public ProjectListResponseDto getUserProjects(User user) {
-		List<ProjectDto> projects = user.getProjectList().stream()
-			.map(Project::toProjectDto).collect(Collectors.toList());
+		List<Project> projects = user.getProjectList();
+		List<ProjectDto> projectDtoList = new ArrayList<>();
+		for (Project project: projects) {
+			projectDtoList.add(project.toProjectDto(
+				projectService.getProjectTagNames(project)));
+		}
 		return ProjectListResponseDto.builder()
 			.totalNum(projects.size())
-			.projectList(projects)
+			.projectList(projectDtoList)
 			.build();
 	}
 }
