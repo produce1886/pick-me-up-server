@@ -34,7 +34,7 @@ public class UserController {
 	public ResponseEntity<Object> loginController(@RequestBody LoginRequestDto loginRequestDto) {
 		if (loginRequestDto.getEmail() == null || loginRequestDto.getUsername() == null) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR));
 		}
 		return ResponseEntity.ok().body(userService.login(loginRequestDto));
 	}
@@ -47,12 +47,12 @@ public class UserController {
 		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, result));
+				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
 		}
 		if (REQUEST_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, result));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create(result)).build();
 	}
@@ -63,7 +63,7 @@ public class UserController {
 		return optionalUser.<ResponseEntity<Object>>map(
 			user -> ResponseEntity.ok().body(user.toUserInfoDto()))
 			.orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER)));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
 	}
 
 	@PutMapping("/user/{id}")
@@ -71,12 +71,12 @@ public class UserController {
 		@PathVariable Long id) {
 		if (userUpdateDto.getUsername() == null) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.INVALID_FIELD_ERROR));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR));
 		}
 		Optional<User> optionalUser = userService.findById(id);
 		if (!optionalUser.isPresent()) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER));
 		}
 		userService.updateUserInfo(optionalUser.get(), userUpdateDto);
 		return ResponseEntity.ok().build();
@@ -88,6 +88,6 @@ public class UserController {
 		return optionalUser.<ResponseEntity<Object>>map(
 			user -> ResponseEntity.ok().body(userService.getUserProjects(user)))
 			.orElseGet(() -> ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, ErrorCase.NO_SUCH_USER)));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
 	}
 }
