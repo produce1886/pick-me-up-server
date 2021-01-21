@@ -26,12 +26,12 @@ public class ProjectController {
 		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, result));
+				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
 		}
 		if (REQUEST_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST, result));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create("/project/" + result)).build();
 	}
