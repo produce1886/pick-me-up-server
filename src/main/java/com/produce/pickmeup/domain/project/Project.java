@@ -1,5 +1,6 @@
 package com.produce.pickmeup.domain.project;
 
+import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
 import com.produce.pickmeup.domain.tag.ProjectTagDto;
 import com.produce.pickmeup.domain.user.User;
@@ -62,6 +63,8 @@ public class Project {
 	private String projectSection;
 	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<ProjectHasTag> projectTags = new ArrayList<>();
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<ProjectComment> projectComments = new ArrayList<>();
 
 	@Builder
 	public Project(String title, String content, String authorEmail, User author, String category,
