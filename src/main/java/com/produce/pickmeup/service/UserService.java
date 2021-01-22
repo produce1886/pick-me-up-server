@@ -82,7 +82,7 @@ public class UserService {
 
 	@Transactional
     public PortfolioListResponseDto getUserPortfolios(User user) {
-		List<Portfolio> portfolios = user.getPortfolioList(); // 일단유저에서정직하게가져옴
+		List<Portfolio> portfolios = user.getPortfolioList();
 		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
 		for (Portfolio portfolio: portfolios) {
 			portfolioDtoList.add(portfolio.toPortfolioDto(
