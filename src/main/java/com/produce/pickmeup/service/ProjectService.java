@@ -32,7 +32,6 @@ public class ProjectService {
 
 	@Transactional
 	public String addProject(ProjectRequestDto projectRequestDto) {
-		//TODO: field check required
 		Optional<User> author = userRepository.findByEmail(projectRequestDto.getAuthorEmail());
 		if (!author.isPresent()) {
 			return ErrorCase.NO_SUCH_USER;
