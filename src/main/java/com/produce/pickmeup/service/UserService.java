@@ -3,6 +3,7 @@ package com.produce.pickmeup.service;
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.login.LoginRequestDto;
 import com.produce.pickmeup.domain.login.LoginResponseDto;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectDto;
 import com.produce.pickmeup.domain.project.ProjectListResponseDto;
@@ -75,4 +76,18 @@ public class UserService {
 			.projectList(projectDtoList)
 			.build();
 	}
+
+	@Transactional
+    public PortfolioListResponseDto getUserPortfolios(User user) {
+		List<Portfolio> portfolios = user.getPortfolioList(); // 일단유저에서정직하게가져옴
+		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
+		for (Portfolio portfolio: portfolios) {
+			portfolioDtoList.add(portfolio.toPortfolioDto(
+					portfolioService.getPortfolioTagNames(portfolio)));
+		}
+		return PortfolioListResponseDto.builder()
+				.totalNum(portfolios.size())
+				.portfolioList(portfolioDtoList)
+				.build();
+    }
 }
