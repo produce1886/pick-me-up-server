@@ -22,6 +22,11 @@ public class ProjectController {
 
 	@PostMapping("/project")
 	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
+		if (isRequestBodyValid(projectRequestDto)) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
+			);
+		}
 		String result = projectService.addProject(projectRequestDto);
 		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
@@ -34,5 +39,16 @@ public class ProjectController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create("/project/" + result)).build();
+	}
+
+	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
+		return projectRequestDto.getAuthorEmail() != null &&
+			projectRequestDto.getTitle() != null &&
+			projectRequestDto.getContent() != null &&
+			projectRequestDto.getCategory() != null &&
+			projectRequestDto.getRecruitmentField() != null &&
+			projectRequestDto.getProjectSection() != null &&
+			projectRequestDto.getRegion() != null &&
+			projectRequestDto.getTags() != null;
 	}
 }
