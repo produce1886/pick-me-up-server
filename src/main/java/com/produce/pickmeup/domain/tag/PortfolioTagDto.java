@@ -9,5 +9,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PortfolioTagDto {
     private final long id;
-    private final String tag;
+    private final String tagName;
 }
