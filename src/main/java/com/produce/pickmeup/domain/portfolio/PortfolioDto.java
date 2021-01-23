@@ -17,12 +17,11 @@ public class PortfolioDto {
     private final String title;
     private final Timestamp createdDate;
     private final Timestamp modifiedDate;
-    private final String authorEmail;
     private final LoginResponseDto user;
     private final String content;
     private final int commentsNum;
     private final long viewNum;
     private final String category;
     private final String recruitmentField;
-    private final List<PortfolioTagDto> portfolioTags;
+    private final List<PortfolioTagDto> portfolioTag;
 }
