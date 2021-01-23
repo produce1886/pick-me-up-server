@@ -90,4 +90,13 @@ public class UserController {
 			.orElseGet(() -> ResponseEntity.badRequest()
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
 	}
+
+	@GetMapping("/user/{id}/portfolios")
+	public ResponseEntity<Object> getUserPortfolios(@PathVariable Long id) {
+		Optional<User> optionalUser = userService.findById(id);
+		return optionalUser.<ResponseEntity<Object>>map(
+				user -> ResponseEntity.ok().body(userService.getUserPortfolios(user)))
+				.orElseGet(() -> ResponseEntity.badRequest()
+						.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
+	}
 }
