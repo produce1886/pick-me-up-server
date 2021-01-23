@@ -17,8 +17,15 @@ public class PortfolioTag {
     private long id;
     @Column(nullable = false)
     private String tagName;
-    @OneToMany(mappedBy = "projectTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<PortfolioHasTag> portfolios = new ArrayList<>();
+    @OneToMany(mappedBy = "portfolioTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<PortfolioHasTag> portfolios = new ArrayList<>();
     @Column
     private long score;
+
+    public PortfolioTagDto toPortfolioTagDto() {
+        return PortfolioTagDto.builder()
+                .id(id)
+                .tagName(tagName)
+                .build();
+    }
 }
