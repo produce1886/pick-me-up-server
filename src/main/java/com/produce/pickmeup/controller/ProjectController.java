@@ -20,7 +20,7 @@ public class ProjectController {
 	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final ProjectService projectService;
 
-	@PostMapping("/project")
+	@PostMapping("/projects")
 	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
 		if (isRequestBodyValid(projectRequestDto)) {
 			return ResponseEntity.badRequest().body(

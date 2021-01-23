@@ -39,7 +39,7 @@ public class UserController {
 		return ResponseEntity.ok().body(userService.login(loginRequestDto));
 	}
 
-	@PatchMapping("/user/{id}/image")
+	@PatchMapping("/users/{id}/image")
 	public ResponseEntity<Object> updateUserImage(
 		@RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
 
@@ -57,7 +57,7 @@ public class UserController {
 		return ResponseEntity.created(URI.create(result)).build();
 	}
 
-	@GetMapping("/user/{id}")
+	@GetMapping("/users/{id}")
 	public ResponseEntity<Object> getUser(@PathVariable Long id) {
 		Optional<User> optionalUser = userService.findById(id);
 		return optionalUser.<ResponseEntity<Object>>map(
@@ -66,7 +66,7 @@ public class UserController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
 	}
 
-	@PutMapping("/user/{id}")
+	@PutMapping("/users/{id}")
 	public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDto userUpdateDto,
 		@PathVariable Long id) {
 		if (userUpdateDto.getUsername() == null) {
@@ -82,7 +82,7 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/user/{id}/projects")
+	@GetMapping("/users/{id}/projects")
 	public ResponseEntity<Object> getUserProjects(@PathVariable Long id) {
 		Optional<User> optionalUser = userService.findById(id);
 		return optionalUser.<ResponseEntity<Object>>map(
@@ -91,7 +91,7 @@ public class UserController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
 	}
 
-	@GetMapping("/user/{id}/portfolios")
+	@GetMapping("/users/{id}/portfolios")
 	public ResponseEntity<Object> getUserPortfolios(@PathVariable Long id) {
 		Optional<User> optionalUser = userService.findById(id);
 		return optionalUser.<ResponseEntity<Object>>map(
