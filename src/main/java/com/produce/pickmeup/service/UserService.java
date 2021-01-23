@@ -3,6 +3,9 @@ package com.produce.pickmeup.service;
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.login.LoginRequestDto;
 import com.produce.pickmeup.domain.login.LoginResponseDto;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
+import com.produce.pickmeup.domain.portfolio.PortfolioDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioListResponseDto;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectDto;
 import com.produce.pickmeup.domain.project.ProjectListResponseDto;
@@ -23,6 +26,7 @@ public class UserService {
 	private final String PROFILE_IMAGE_PATH = "profile-image";
 	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
+	private final PortfolioService portfolioService;
 	private final ProjectService projectService;
 	private final UserRepository userRepository;
 	private final S3Uploader s3Uploader;
@@ -75,4 +79,18 @@ public class UserService {
 			.projectList(projectDtoList)
 			.build();
 	}
+
+	@Transactional
+    public PortfolioListResponseDto getUserPortfolios(User user) {
+		List<Portfolio> portfolios = user.getPortfolioList();
+		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
+		for (Portfolio portfolio: portfolios) {
+			portfolioDtoList.add(portfolio.toPortfolioDto(
+					portfolioService.getPortfolioTagNames(portfolio)));
+		}
+		return PortfolioListResponseDto.builder()
+				.totalNum(portfolios.size())
+				.portfolioList(portfolioDtoList)
+				.build();
+    }
 }
