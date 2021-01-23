@@ -2,6 +2,7 @@ package com.produce.pickmeup.domain.user;
 
 
 import com.produce.pickmeup.domain.login.LoginResponseDto;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.project.Project;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import lombok.NoArgsConstructor;
 public class User {
 	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private final List<Project> projectList = new ArrayList<>();
+	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private final List<Portfolio> portfolioList = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
