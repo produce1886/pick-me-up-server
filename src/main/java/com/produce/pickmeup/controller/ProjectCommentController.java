@@ -20,7 +20,7 @@ public class ProjectCommentController {
 	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final ProjectCommentService projectCommentService;
 
-	@PostMapping("/projects/{id}/comment")
+	@PostMapping("/projects/{id}/comments")
 	public ResponseEntity<Object> addProjectComment(@PathVariable Long id,
 		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
 		String result = projectCommentService.addProjectComment(projectCommentRequestDto, id);
