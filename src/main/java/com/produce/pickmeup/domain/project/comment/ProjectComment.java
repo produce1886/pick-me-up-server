@@ -38,12 +38,15 @@ public class ProjectComment {
 	@JoinColumn(name = "user_id")
 	private User author;
 	@Column(nullable = false)
+	private String authorEmail;
+	@Column(nullable = false)
 	private String content;
 
 	@Builder
 	public ProjectComment(String content, User author, Project project) {
 		this.content = content;
 		this.author = author;
+		this.authorEmail = author.getEmail();
 		this.project = project;
 		this.createdDate = new Timestamp(System.currentTimeMillis());
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
