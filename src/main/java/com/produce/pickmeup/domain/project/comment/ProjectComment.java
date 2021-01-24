@@ -52,4 +52,13 @@ public class ProjectComment {
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
 
+	public ProjectCommentResponseDto toResponseDto() {
+		return ProjectCommentResponseDto.builder()
+			.id(id)
+			.createdDate(createdDate)
+			.modifiedDate(modifiedDate)
+			.content(content)
+			.user(author.toResponseDto())
+			.build();
+	}
 }
