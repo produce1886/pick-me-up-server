@@ -17,27 +17,29 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "project_tags")
+@Table(name = "tags")
 @NoArgsConstructor
-public class ProjectTag {
+public class Tag {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	@Column(nullable = false)
 	private String tagName;
 	@OneToMany(mappedBy = "projectTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<ProjectHasTag> projects = new ArrayList<>();
+	private final List<ProjectHasTag> projects = new ArrayList<>();
+	@OneToMany(mappedBy = "portfolioTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private final List<PortfolioHasTag> portfolios = new ArrayList<>();
 	@Column
 	private long score;
 
 	@Builder
-	public ProjectTag(String tagName) {
+	public Tag(String tagName) {
 		this.tagName = tagName;
 		this.score = 0;
 	}
 
-	public ProjectTagDto toProjectTagDto() {
-		return ProjectTagDto.builder()
+	public TagDto toTagDto() {
+		return TagDto.builder()
 			.id(id)
 			.tagName(tagName)
 			.build();
