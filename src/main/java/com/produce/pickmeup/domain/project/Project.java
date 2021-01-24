@@ -2,7 +2,7 @@ package com.produce.pickmeup.domain.project;
 
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
-import com.produce.pickmeup.domain.tag.ProjectTagDto;
+import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,6 +29,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Table(name = "projects")
 @NoArgsConstructor
 public class Project {
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private final List<ProjectHasTag> projectTags = new ArrayList<>();
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private final List<ProjectComment> projectComments = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -61,15 +65,11 @@ public class Project {
 	private String region;
 	@Column(nullable = false)
 	private String projectSection;
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<ProjectHasTag> projectTags = new ArrayList<>();
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<ProjectComment> projectComments = new ArrayList<>();
 
 	@Builder
-	public Project(String title, String content, String authorEmail, User author, String category,
+	public Project(String title, String content, User author, String category,
 		String recruitmentField, String region, String projectSection, String image) {
-		this.authorEmail = authorEmail;
+		this.authorEmail = author.getEmail();
 		this.title = title;
 		this.content = content;
 		this.author = author;
@@ -84,7 +84,7 @@ public class Project {
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
 
-	public ProjectDto toProjectDto(List<ProjectTagDto> tagDtoList) {
+	public ProjectDto toProjectDto(List<TagDto> tagDtoList) {
 		return ProjectDto.builder()
 			.id(id)
 			.user(author.toResponseDto())
@@ -96,7 +96,7 @@ public class Project {
 			.projectSection(projectSection)
 			.viewNum(viewNum)
 			.commentsNum(commentsNum)
-			.tags(tagDtoList)
+			.projectTags(tagDtoList)
 			.createdDate(createdDate)
 			.modifiedDate(modifiedDate)
 			.build();

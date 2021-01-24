@@ -18,5 +18,5 @@ public class ProjectRequestDto {
 	private final String region;
 	private final String projectSection;
 	private final String image;
-	private final List<String> tags;
+	private final List<String> projectTags;
 }
