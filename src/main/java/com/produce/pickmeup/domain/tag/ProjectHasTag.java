@@ -26,11 +26,11 @@ public class ProjectHasTag {
 	private Project project;
 	@ManyToOne
 	@JoinColumn(name = "tag_id")
-	private ProjectTag projectTag;
+	private Tag projectTag;
 
 	@Builder
-	public ProjectHasTag(Project project, ProjectTag projectTag) {
+	public ProjectHasTag(Project project, Tag tag) {
 		this.project = project;
-		this.projectTag = projectTag;
+		this.projectTag = tag;
 	}
 }
