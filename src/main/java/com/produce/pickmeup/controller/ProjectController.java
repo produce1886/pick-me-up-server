@@ -22,7 +22,7 @@ public class ProjectController {
 
 	@PostMapping("/projects")
 	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
-		if (isRequestBodyValid(projectRequestDto)) {
+		if (!isRequestBodyValid(projectRequestDto)) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
 			);
@@ -49,6 +49,6 @@ public class ProjectController {
 			projectRequestDto.getRecruitmentField() != null &&
 			projectRequestDto.getProjectSection() != null &&
 			projectRequestDto.getRegion() != null &&
-			projectRequestDto.getTags() != null;
+			projectRequestDto.getProjectTags() != null;
 	}
 }
