@@ -1,7 +1,7 @@
 package com.produce.pickmeup.domain.project;
 
 import com.produce.pickmeup.domain.login.LoginResponseDto;
-import com.produce.pickmeup.domain.tag.ProjectTagDto;
+import com.produce.pickmeup.domain.tag.TagDto;
 import java.sql.Timestamp;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class ProjectDto {
 	private final String recruitmentField;
 	private final String region;
 	private final String projectSection;
-	private final List<ProjectTagDto> tags;
+	private final List<TagDto> projectTags;
 	private final Timestamp createdDate;
 	private final Timestamp modifiedDate;
 	private final LoginResponseDto user;
