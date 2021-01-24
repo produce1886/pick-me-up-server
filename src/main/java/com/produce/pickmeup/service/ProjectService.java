@@ -8,9 +8,9 @@ import com.produce.pickmeup.domain.project.ProjectRepository;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
 import com.produce.pickmeup.domain.tag.ProjectHasTagRepository;
-import com.produce.pickmeup.domain.tag.ProjectTag;
-import com.produce.pickmeup.domain.tag.ProjectTagDto;
-import com.produce.pickmeup.domain.tag.ProjectTagRepository;
+import com.produce.pickmeup.domain.tag.Tag;
+import com.produce.pickmeup.domain.tag.TagDto;
+import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.domain.user.UserRepository;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class ProjectService {
 	private final UserRepository userRepository;
 	private final ProjectRepository projectRepository;
-	private final ProjectTagRepository projectTagRepository;
+	private final TagRepository tagRepository;
 	private final ProjectHasTagRepository relationRepository;
 
 	@Transactional
@@ -38,7 +38,6 @@ public class ProjectService {
 		}
 		long result = projectRepository.save(
 			Project.builder()
-				.authorEmail(projectRequestDto.getAuthorEmail())
 				.author(author.get())
 				.title(projectRequestDto.getTitle())
 				.content(projectRequestDto.getContent())
@@ -49,7 +48,7 @@ public class ProjectService {
 				.image(projectRequestDto.getImage())
 				.build())
 			.getId();
-		if (!projectConnectTags(projectRequestDto.getTags(), result)) {
+		if (!projectConnectTags(projectRequestDto.getProjectTags(), result)) {
 			return ErrorCase.FAIL_TAG_SAVE_ERROR;
 		}
 		return String.valueOf(result);
@@ -62,29 +61,31 @@ public class ProjectService {
 			return false;
 		}
 		for (String tagName : projectTags) {
-			ProjectTag projectTag = projectTagRepository.findByTagName(tagName)
+			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
 			relationRepository.save(
-				ProjectHasTag.builder().project(savedProject.get()).projectTag(projectTag).build()
+				ProjectHasTag.builder()
+					.project(savedProject.get())
+					.tag(tag).build()
 			);
 		}
 		return true;
 	}
 
 	@Transactional
-	public ProjectTag addProjectTag(String tagName) {
-		return projectTagRepository.save(
-			ProjectTag.builder().tagName(tagName).build());
+	public Tag addProjectTag(String tagName) {
+		return tagRepository.save(
+			Tag.builder().tagName(tagName).build());
 	}
 
 	@Transactional
-	public List<ProjectTagDto> getProjectTagNames(Project project) {
+	public List<TagDto> getProjectTagNames(Project project) {
 		List<ProjectHasTag> relations = relationRepository.findByProject(project);
 		if (relations.isEmpty()) {
 			return Collections.emptyList();
 		}
 		return relations.stream().map(ProjectHasTag::getProjectTag)
-			.map(ProjectTag::toProjectTagDto)
+			.map(Tag::toTagDto)
 			.collect(Collectors.toList());
 	}
 }
