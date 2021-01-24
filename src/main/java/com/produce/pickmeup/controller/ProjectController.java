@@ -2,14 +2,18 @@ package com.produce.pickmeup.controller;
 
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
+import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
 import com.produce.pickmeup.service.ProjectService;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -39,6 +43,15 @@ public class ProjectController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create("/project/" + result)).build();
+	}
+
+	@GetMapping("/projects/{id}")
+	public ResponseEntity<Object> getProjectDetail(@PathVariable Long id) {
+		Optional<Project> project = projectService.getProject(id);
+		return project.<ResponseEntity<Object>>map(
+			value -> ResponseEntity.ok(projectService.getProjectDetail(value)))
+			.orElseGet(() -> ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT)));
 	}
 
 	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
