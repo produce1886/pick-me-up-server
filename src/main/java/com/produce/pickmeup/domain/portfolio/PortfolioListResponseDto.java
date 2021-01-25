@@ -10,6 +10,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class PortfolioListResponseDto {
-    private final int totalNum;
-    private final List<PortfolioDto> portfolioList;
+	private final int totalNum;
+	private final List<PortfolioDto> portfolioList;
 }
