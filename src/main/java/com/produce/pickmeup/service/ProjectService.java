@@ -34,14 +34,10 @@ public class ProjectService {
 	private final ProjectHasTagRepository relationRepository;
 
 	@Transactional
-	public String addProject(ProjectRequestDto projectRequestDto) {
-		Optional<User> author = userRepository.findByEmail(projectRequestDto.getAuthorEmail());
-		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER;
-		}
+	public String addProject(ProjectRequestDto projectRequestDto, User author) {
 		long result = projectRepository.save(
 			Project.builder()
-				.author(author.get())
+				.author(author)
 				.title(projectRequestDto.getTitle())
 				.content(projectRequestDto.getContent())
 				.category(projectRequestDto.getCategory())

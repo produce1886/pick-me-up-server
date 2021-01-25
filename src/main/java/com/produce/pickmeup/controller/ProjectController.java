@@ -4,7 +4,9 @@ import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
+import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.service.ProjectService;
+import com.produce.pickmeup.service.UserService;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ public class ProjectController {
 	private final List<String> INTERNAL_ERROR_LIST = ErrorCase.getInternalErrorList();
 	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final ProjectService projectService;
+	private final UserService userService;
 
 	@PostMapping("/projects")
 	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
@@ -31,18 +34,19 @@ public class ProjectController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
 			);
 		}
-		String result = projectService.addProject(projectRequestDto);
+		Optional<User> author = userService.findByEmail(projectRequestDto.getAuthorEmail());
+		if (!author.isPresent()) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)
+			);
+		}
+		String result = projectService.addProject(projectRequestDto, author.get());
 		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
 		}
-		if (REQUEST_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
-		}
-		return ResponseEntity.created(URI.create("/project/" + result)).build();
+		return ResponseEntity.created(URI.create("/projects/" + result)).build();
 	}
 
 	@GetMapping("/projects/{id}")
