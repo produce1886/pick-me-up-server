@@ -3,24 +3,16 @@ package com.produce.pickmeup.domain.portfolio;
 import com.produce.pickmeup.domain.tag.PortfolioHasTag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -48,6 +40,8 @@ public class Portfolio {
 	@Column(nullable = false)
 	private String content;
 	@Column
+	private String image;
+	@Column
 	private int commentsNum;
 	@Column
 	private long viewNum;
@@ -55,6 +49,22 @@ public class Portfolio {
 	private String category;
 	@Column(nullable = false)
 	private String recruitmentField;
+
+	@Builder
+	public Portfolio(String title, String content, User author, String category,
+				   String recruitmentField, String image) {
+		this.authorEmail = author.getEmail();
+		this.title = title;
+		this.content = content;
+		this.author = author;
+		this.category = category;
+		this.recruitmentField = recruitmentField;
+		this.image = image;
+		this.commentsNum = 0;
+		this.viewNum = 0;
+		this.createdDate = new Timestamp(System.currentTimeMillis());
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
+	}
 
 	public PortfolioDto toPortfolioDto(List<TagDto> TagDtoList) {
 		return PortfolioDto.builder()
