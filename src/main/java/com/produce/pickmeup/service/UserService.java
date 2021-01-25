@@ -62,6 +62,11 @@ public class UserService {
 	}
 
 	@Transactional
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
+	@Transactional
 	public void updateUserInfo(User user, UserUpdateDto userUpdateDto) {
 		user.updateInfo(userUpdateDto);
 	}
@@ -70,7 +75,7 @@ public class UserService {
 	public ProjectListResponseDto getUserProjects(User user) {
 		List<Project> projects = user.getProjectList();
 		List<ProjectDto> projectDtoList = new ArrayList<>();
-		for (Project project: projects) {
+		for (Project project : projects) {
 			projectDtoList.add(project.toProjectDto(
 				projectService.getProjectTagNames(project)));
 		}
@@ -81,16 +86,16 @@ public class UserService {
 	}
 
 	@Transactional
-    public PortfolioListResponseDto getUserPortfolios(User user) {
+	public PortfolioListResponseDto getUserPortfolios(User user) {
 		List<Portfolio> portfolios = user.getPortfolioList();
 		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
-		for (Portfolio portfolio: portfolios) {
+		for (Portfolio portfolio : portfolios) {
 			portfolioDtoList.add(portfolio.toPortfolioDto(
-					portfolioService.getPortfolioTagNames(portfolio)));
+				portfolioService.getPortfolioTagNames(portfolio)));
 		}
 		return PortfolioListResponseDto.builder()
-				.totalNum(portfolios.size())
-				.portfolioList(portfolioDtoList)
-				.build();
-    }
+			.totalNum(portfolios.size())
+			.portfolioList(portfolioDtoList)
+			.build();
+	}
 }
