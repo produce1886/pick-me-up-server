@@ -1,6 +1,7 @@
 package com.produce.pickmeup.domain.project;
 
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
+import com.produce.pickmeup.domain.project.comment.ProjectCommentResponseDto;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
@@ -84,6 +85,14 @@ public class Project {
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
 
+	public void upViewNum() {
+		this.viewNum ++;
+	}
+
+	public void upCommentsNum() {
+		this. commentsNum ++;
+	}
+
 	public ProjectDto toProjectDto(List<TagDto> tagDtoList) {
 		return ProjectDto.builder()
 			.id(id)
@@ -99,6 +108,26 @@ public class Project {
 			.projectTags(tagDtoList)
 			.createdDate(createdDate)
 			.modifiedDate(modifiedDate)
+			.build();
+	}
+
+	public ProjectDetailResponseDto toDetailResponseDto(List<TagDto> tagDtoList, List<ProjectCommentResponseDto> commentDtoList) {
+		return ProjectDetailResponseDto.builder()
+			.id(id)
+			.title(title)
+			.content(content)
+			.category(category)
+			.recruitmentField(recruitmentField)
+			.region(region)
+			.projectSection(projectSection)
+			.projectTags(tagDtoList)
+			.image(image)
+			.createdDate(createdDate)
+			.modifiedDate(modifiedDate)
+			.user(author.toResponseDto())
+			.viewNum(viewNum)
+			.commentsNum(commentsNum)
+			.comments(commentDtoList)
 			.build();
 	}
 }

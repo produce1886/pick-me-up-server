@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.project.Project;
+import com.produce.pickmeup.domain.project.ProjectDetailResponseDto;
 import com.produce.pickmeup.domain.project.ProjectRepository;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
+import com.produce.pickmeup.domain.project.comment.ProjectComment;
+import com.produce.pickmeup.domain.project.comment.ProjectCommentResponseDto;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
 import com.produce.pickmeup.domain.tag.ProjectHasTagRepository;
 import com.produce.pickmeup.domain.tag.Tag;
@@ -31,14 +34,10 @@ public class ProjectService {
 	private final ProjectHasTagRepository relationRepository;
 
 	@Transactional
-	public String addProject(ProjectRequestDto projectRequestDto) {
-		Optional<User> author = userRepository.findByEmail(projectRequestDto.getAuthorEmail());
-		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER;
-		}
+	public String addProject(ProjectRequestDto projectRequestDto, User author) {
 		long result = projectRepository.save(
 			Project.builder()
-				.author(author.get())
+				.author(author)
 				.title(projectRequestDto.getTitle())
 				.content(projectRequestDto.getContent())
 				.category(projectRequestDto.getCategory())
@@ -87,5 +86,25 @@ public class ProjectService {
 		return relations.stream().map(ProjectHasTag::getProjectTag)
 			.map(Tag::toTagDto)
 			.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public Optional<Project> getProject(Long projectId) {
+		return projectRepository.findById(projectId);
+	}
+
+	@Transactional
+	public ProjectDetailResponseDto getProjectDetail(Project project) {
+		project.upViewNum();
+		List<ProjectHasTag> relations = project.getProjectTags();
+		List<ProjectCommentResponseDto> comments = project.getProjectComments()
+			.stream().map(ProjectComment::toResponseDto).collect(Collectors.toList());
+		if (relations.isEmpty()) {
+			return project.toDetailResponseDto(Collections.emptyList(), comments);
+		}
+		List<TagDto> projectTags = relations.stream()
+			.map(ProjectHasTag::getProjectTag)
+			.map(Tag::toTagDto).collect(Collectors.toList());
+		return project.toDetailResponseDto(projectTags, comments);
 	}
 }
