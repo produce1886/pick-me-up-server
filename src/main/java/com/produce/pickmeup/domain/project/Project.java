@@ -85,12 +85,16 @@ public class Project {
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
 
+	public void updateImage(String image) {
+		this.image = image;
+	}
+
 	public void upViewNum() {
-		this.viewNum ++;
+		this.viewNum++;
 	}
 
 	public void upCommentsNum() {
-		this. commentsNum ++;
+		this.commentsNum++;
 	}
 
 	public ProjectDto toProjectDto(List<TagDto> tagDtoList) {
@@ -111,7 +115,8 @@ public class Project {
 			.build();
 	}
 
-	public ProjectDetailResponseDto toDetailResponseDto(List<TagDto> tagDtoList, List<ProjectCommentResponseDto> commentDtoList) {
+	public ProjectDetailResponseDto toDetailResponseDto(List<TagDto> tagDtoList,
+		List<ProjectCommentResponseDto> commentDtoList) {
 		return ProjectDetailResponseDto.builder()
 			.id(id)
 			.title(title)
