@@ -37,6 +37,7 @@ public class ProjectCommentService {
 				.project(project.get())
 				.build())
 			.getId();
+		project.get().upCommentsNum();
 		return String.valueOf(result);
 	}
 }
