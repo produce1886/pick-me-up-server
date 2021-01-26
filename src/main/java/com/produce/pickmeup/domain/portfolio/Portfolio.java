@@ -1,5 +1,7 @@
 package com.produce.pickmeup.domain.portfolio;
 
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
 import com.produce.pickmeup.domain.tag.PortfolioHasTag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
@@ -21,6 +23,8 @@ import java.util.List;
 public class Portfolio {
 	@OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private final List<PortfolioHasTag> portfolioTags = new ArrayList<>();
+	@OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private final List<PortfolioComment> portfolioComments = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -79,6 +83,25 @@ public class Portfolio {
 			.portfolioTag(TagDtoList)
 			.createdDate(createdDate)
 			.modifiedDate(modifiedDate)
+			.build();
+	}
+
+	public PortfolioDetailResponseDto toDetailResponseDto
+		(List<TagDto> portfolioTags, List<PortfolioCommentResponseDto> comments) {
+		return PortfolioDetailResponseDto.builder()
+			.image(image)
+			.user(author.toResponseDto())
+			.id(id)
+			.title(title)
+			.content(content)
+			.category(category)
+			.recruitmentField(recruitmentField)
+			.portfolioTags(portfolioTags)
+			.createdDate(createdDate)
+			.modifiedDate(modifiedDate)
+			.viewNum(viewNum)
+			.commentsNum(commentsNum)
+			.comments(comments)
 			.build();
 	}
 }
