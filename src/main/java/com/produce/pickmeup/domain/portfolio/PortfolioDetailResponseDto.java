@@ -1,6 +1,7 @@
 package com.produce.pickmeup.domain.portfolio;
 
 import com.produce.pickmeup.domain.login.LoginResponseDto;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
 import com.produce.pickmeup.domain.tag.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
