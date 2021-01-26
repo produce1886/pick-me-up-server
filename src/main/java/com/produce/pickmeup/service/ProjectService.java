@@ -15,7 +15,6 @@ import com.produce.pickmeup.domain.tag.Tag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
-import com.produce.pickmeup.domain.user.UserRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +22,20 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProjectService {
-	private final UserRepository userRepository;
+	private final String PROJECT_IMAGE_PATH = "project-image";
+	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
+
 	private final ProjectRepository projectRepository;
 	private final TagRepository tagRepository;
 	private final ProjectHasTagRepository relationRepository;
+	private final S3Uploader s3Uploader;
+
 
 	@Transactional
 	public String addProject(ProjectRequestDto projectRequestDto, User author) {
@@ -106,5 +110,16 @@ public class ProjectService {
 			.map(ProjectHasTag::getProjectTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
 		return project.toDetailResponseDto(projectTags, comments);
+	}
+
+	@Transactional
+	public String updateProjectImage(MultipartFile multipartFile, Project project) {
+		String result = s3Uploader.upload(multipartFile, PROJECT_IMAGE_PATH,
+			String.valueOf(project.getId()));
+		if (ERROR_LIST.contains(result)) {
+			return result;
+		}
+		project.updateImage(result);
+		return result;
 	}
 }
