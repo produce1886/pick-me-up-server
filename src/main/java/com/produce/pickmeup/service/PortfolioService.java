@@ -1,10 +1,9 @@
 package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.common.ErrorCase;
-import com.produce.pickmeup.domain.portfolio.Portfolio;
-import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
-import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
-import com.produce.pickmeup.domain.project.Project;
+import com.produce.pickmeup.domain.portfolio.*;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
 import com.produce.pickmeup.domain.tag.*;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.domain.user.UserRepository;
@@ -82,5 +81,23 @@ public class PortfolioService {
 	private Tag addPortfolioTag(String tagName) {
 		return tagRepository.save(
 			Tag.builder().tagName(tagName).build());
+	}
+
+	public Optional<Portfolio> getPortfolio(Long portfolioId) {
+		return portfolioRepository.findById(portfolioId);
+	}
+
+	public PortfolioDetailResponseDto getPortfolioDetail(Portfolio portfolio) {
+		portfolio.upViewNum();
+		List<PortfolioHasTag> relations = portfolio.getPortfolioTags();
+		List<PortfolioCommentResponseDto> comments = portfolio.getPortfolioComments()
+			.stream().map(PortfolioComment::toResponseDto).collect(Collectors.toList());
+		if (relations.isEmpty()) {
+			return portfolio.toDetailResponseDto(Collections.emptyList(), comments);
+		}
+		List<TagDto> PortfolioTags = relations.stream()
+			.map(PortfolioHasTag::getPortfolioTag)
+			.map(Tag::toTagDto).collect(Collectors.toList());
+		return portfolio.toDetailResponseDto(PortfolioTags, comments);
 	}
 }
