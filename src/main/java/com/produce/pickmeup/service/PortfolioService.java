@@ -41,7 +41,7 @@ public class PortfolioService {
 
 		Optional<User> author = userRepository.findByEmail(portfolioRequestDto.getAuthorEmail());
 		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER;
+			return ErrorCase.NO_SUCH_USER_ERROR;
 		}
 		long result = portfolioRepository.save(
 			Portfolio.builder()

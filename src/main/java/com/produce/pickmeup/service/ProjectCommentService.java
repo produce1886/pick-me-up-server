@@ -25,10 +25,10 @@ public class ProjectCommentService {
 		Optional<User> author = userRepository.findByEmail(projectCommentRequestDto.getEmail());
 		Optional<Project> project = projectRepository.findById(projectId);
 		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER;
+			return ErrorCase.NO_SUCH_USER_ERROR;
 		}
 		if (!project.isPresent()) {
-			return ErrorCase.NO_SUCH_PROJECT;
+			return ErrorCase.NO_SUCH_PROJECT_ERROR;
 		}
 		long result = projectCommentRepository.save(
 			ProjectComment.builder()

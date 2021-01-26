@@ -46,7 +46,7 @@ public class UserService {
 	public String updateUserImage(MultipartFile multipartFile, Long id) {
 		Optional<User> user = userRepository.findById(id);
 		if (!user.isPresent()) {
-			return ErrorCase.NO_SUCH_USER;
+			return ErrorCase.NO_SUCH_USER_ERROR;
 		}
 		String result = s3Uploader.upload(multipartFile, PROFILE_IMAGE_PATH, id.toString());
 		if (ERROR_LIST.contains(result)) {
