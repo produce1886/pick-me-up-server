@@ -145,4 +145,8 @@ public class ProjectService {
 		deleteProjectTagRelations(project, disconnectTagNames);
 		projectConnectTags(newTagNames, project);
 	}
+	@Transactional
+	public void deleteProject(Project project) {
+		projectRepository.delete(project);
+	}
 }

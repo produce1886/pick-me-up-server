@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,7 +69,8 @@ public class ProjectController {
 		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		String result = projectService.updateProjectImage(multipartFile, project.get());
 
@@ -96,9 +98,11 @@ public class ProjectController {
 		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
-		if (!projectService.checkProjectAuthorEmail(project.get(), projectRequestDto.getAuthorEmail())) {
+		if (!projectService.checkProjectAuthorEmail(
+			project.get(), projectRequestDto.getAuthorEmail())) {
 			System.out.println(project.get().getAuthorEmail());
 			System.out.println(projectRequestDto.getAuthorEmail());
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -106,6 +110,18 @@ public class ProjectController {
 		}
 		projectService.updateProject(project.get(), projectRequestDto);
 		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/projects/{id}")
+	public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
+		Optional<Project> project = projectService.getProject(id);
+		if (!project.isPresent()) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PROJECT_ERROR));
+		}
+		projectService.deleteProject(project.get());
+		return ResponseEntity.noContent().build();
 	}
 
 	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
