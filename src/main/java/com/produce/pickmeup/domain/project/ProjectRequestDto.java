@@ -9,7 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ProjectRequestDto {
-	private final long id;
 	private final String title;
 	private final String authorEmail;
 	private final String content;
