@@ -89,6 +89,16 @@ public class Project {
 		this.image = image;
 	}
 
+	public void updateExceptTags(ProjectRequestDto projectRequestDto) {
+		this.title = projectRequestDto.getTitle();
+		this.content = projectRequestDto.getContent();
+		this.category = projectRequestDto.getCategory();
+		this.recruitmentField = projectRequestDto.getRecruitmentField();
+		this.region = projectRequestDto.getRegion();
+		this.projectSection = projectRequestDto.getProjectSection();
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
+	}
+
 	public void upViewNum() {
 		this.viewNum++;
 	}
