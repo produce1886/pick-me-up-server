@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +41,7 @@ public class ProjectController {
 		Optional<User> author = userService.findByEmail(projectRequestDto.getAuthorEmail());
 		if (!author.isPresent()) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)
 			);
 		}
 		String result = projectService.addProject(projectRequestDto, author.get());
@@ -58,7 +59,7 @@ public class ProjectController {
 		return project.<ResponseEntity<Object>>map(
 			value -> ResponseEntity.ok(projectService.getProjectDetail(value)))
 			.orElseGet(() -> ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT)));
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR)));
 	}
 
 	@PatchMapping("/projects/{id}/image")
@@ -67,7 +68,7 @@ public class ProjectController {
 		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		String result = projectService.updateProjectImage(multipartFile, project.get());
 
@@ -82,6 +83,29 @@ public class ProjectController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create(result)).build();
+	}
+
+	@PutMapping("/projects/{id}")
+	public ResponseEntity<Object> updateProject(@PathVariable Long id,
+		@RequestBody ProjectRequestDto projectRequestDto) {
+		if (!isRequestBodyValid(projectRequestDto)) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
+			);
+		}
+		Optional<Project> project = projectService.getProject(id);
+		if (!project.isPresent()) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
+		}
+		if (!projectService.checkProjectAuthorEmail(project.get(), projectRequestDto.getAuthorEmail())) {
+			System.out.println(project.get().getAuthorEmail());
+			System.out.println(projectRequestDto.getAuthorEmail());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
+		}
+		projectService.updateProject(project.get(), projectRequestDto);
+		return ResponseEntity.ok().build();
 	}
 
 	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {

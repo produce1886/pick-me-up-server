@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class PortfolioRequestDto {
-	private final long id;
 	private final String title;
 	private final String authorEmail;
 	private final String content;

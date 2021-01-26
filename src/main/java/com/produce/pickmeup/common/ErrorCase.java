@@ -11,11 +11,12 @@ public class ErrorCase {
 	public static final String FAIL_FILE_SAVE_ERROR = "파일 저장에 실패했습니다. ";
 	public static final String FAIL_FILE_CONVERT_ERROR = "파일 변환에 실패했습니다. ";
 	public static final String FAIL_FILE_DELETE_ERROR = "파일 삭제에 실패했습니다. ";
-	public static final String INVALID_FILE_TYPE = "지원하지 않는 파일 형식입니다. ";
-	public static final String NO_SUCH_USER = "존재하지 않는 계정입니다. ";
-	public static final String NO_SUCH_PROJECT = "존재하지 않는 프로젝트입니다. ";
-	public static final String NO_SUCH_PORTFOLIO = "존재하지 않는 포트폴리오입니다. ";
+	public static final String INVALID_FILE_TYPE_ERROR = "지원하지 않는 파일 형식입니다. ";
+	public static final String NO_SUCH_USER_ERROR = "존재하지 않는 계정입니다. ";
+	public static final String NO_SUCH_PROJECT_ERROR = "존재하지 않는 프로젝트입니다. ";
+	public static final String NO_SUCH_PORTFOLIO_ERROR = "존재하지 않는 포트폴리오입니다. ";
 	public static final String FAIL_TAG_SAVE_ERROR = "태그 등록에 실패했습니다. ";
+	public static final String FORBIDDEN_ERROR = "권한이 없습니다. ";
 
 	public static List<String> getInternalErrorList() {
 		return Arrays.asList(
@@ -30,10 +31,10 @@ public class ErrorCase {
 	public static List<String> getRequestErrorList() {
 		return Arrays.asList(
 			INVALID_FIELD_ERROR,
-			INVALID_FILE_TYPE,
-			NO_SUCH_USER,
-			NO_SUCH_PROJECT,
-			NO_SUCH_PORTFOLIO
+			INVALID_FILE_TYPE_ERROR,
+			NO_SUCH_USER_ERROR,
+			NO_SUCH_PROJECT_ERROR,
+			NO_SUCH_PORTFOLIO_ERROR
 		);
 	}
 

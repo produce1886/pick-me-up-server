@@ -56,7 +56,7 @@ public class S3Uploader {
 		String extension = getExtension(uploadFile.getName()).toLowerCase();
 		if (!IMAGE_EXTENSIONS.contains(extension)) {
 			deleteLocalFile(uploadFile);
-			return ErrorCase.INVALID_FILE_TYPE;
+			return ErrorCase.INVALID_FILE_TYPE_ERROR;
 		}
 		String fileName = dirName + "/" + id + extension;
 		String uploadImageUrl = putS3(uploadFile, fileName);
