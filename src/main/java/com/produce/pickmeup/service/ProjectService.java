@@ -15,6 +15,7 @@ import com.produce.pickmeup.domain.tag.Tag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class ProjectService {
 
 	@Transactional
 	public String addProject(ProjectRequestDto projectRequestDto, User author) {
-		long result = projectRepository.save(
+		Project project = projectRepository.save(
 			Project.builder()
 				.author(author)
 				.title(projectRequestDto.getTitle())
@@ -49,30 +50,22 @@ public class ProjectService {
 				.region(projectRequestDto.getRegion())
 				.projectSection(projectRequestDto.getProjectSection())
 				.image(projectRequestDto.getImage())
-				.build())
-			.getId();
-		if (!projectConnectTags(projectRequestDto.getProjectTags(), result)) {
-			return ErrorCase.FAIL_TAG_SAVE_ERROR;
-		}
-		return String.valueOf(result);
+				.build());
+		projectConnectTags(projectRequestDto.getProjectTags(), project);
+		return String.valueOf(project.getId());
 	}
 
 	@Transactional
-	public boolean projectConnectTags(List<String> projectTags, long projectId) {
-		Optional<Project> savedProject = projectRepository.findById(projectId);
-		if (!savedProject.isPresent()) {
-			return false;
-		}
+	public void projectConnectTags(List<String> projectTags, Project savedProject) {
 		for (String tagName : projectTags) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
 			relationRepository.save(
 				ProjectHasTag.builder()
-					.project(savedProject.get())
+					.project(savedProject)
 					.tag(tag).build()
 			);
 		}
-		return true;
 	}
 
 	@Transactional
@@ -121,5 +114,35 @@ public class ProjectService {
 		}
 		project.updateImage(result);
 		return result;
+	}
+
+	public boolean checkProjectAuthorEmail(Project project, String authorEmail) {
+		return project.getAuthorEmail().equals(authorEmail);
+	}
+
+	@Transactional
+	public void deleteProjectTagRelations(Project project, List<String> disconnectTagNames) {
+		disconnectTagNames.forEach(value ->
+			tagRepository.findByTagName(value).ifPresent(tag ->
+				relationRepository.deleteByProjectAndProjectTag(project, tag))
+		);
+	}
+
+	@Transactional
+	public void updateProject(Project project, ProjectRequestDto requestDto) {
+		project.updateExceptTags(requestDto);
+
+		List<String> originalTagNames = getProjectTagNames(project).stream().map(TagDto::getTagName)
+			.collect(Collectors.toList());
+		List<String> newTagNames = requestDto.getProjectTags();
+		List<String> disconnectTagNames = new ArrayList<>();
+		for (String tagName : originalTagNames) {
+			if (!newTagNames.contains(tagName)) {
+				disconnectTagNames.add(tagName);
+			}
+		}
+		newTagNames.removeIf(originalTagNames::contains); //new
+		deleteProjectTagRelations(project, disconnectTagNames);
+		projectConnectTags(newTagNames, project);
 	}
 }
