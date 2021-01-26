@@ -104,4 +104,8 @@ public class Portfolio {
 			.comments(comments)
 			.build();
 	}
+
+	public void upViewNum() {
+		this.viewNum++;
+	}
 }
