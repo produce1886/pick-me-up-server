@@ -14,6 +14,7 @@ public class ErrorCase {
 	public static final String INVALID_FILE_TYPE = "지원하지 않는 파일 형식입니다. ";
 	public static final String NO_SUCH_USER = "존재하지 않는 계정입니다. ";
 	public static final String NO_SUCH_PROJECT = "존재하지 않는 프로젝트입니다. ";
+	public static final String NO_SUCH_PORTFOLIO = "존재하지 않는 포트폴리오입니다. ";
 	public static final String FAIL_TAG_SAVE_ERROR = "태그 등록에 실패했습니다. ";
 
 	public static List<String> getInternalErrorList() {
@@ -31,7 +32,8 @@ public class ErrorCase {
 			INVALID_FIELD_ERROR,
 			INVALID_FILE_TYPE,
 			NO_SUCH_USER,
-			NO_SUCH_PROJECT
+			NO_SUCH_PROJECT,
+			NO_SUCH_PORTFOLIO
 		);
 	}
 
