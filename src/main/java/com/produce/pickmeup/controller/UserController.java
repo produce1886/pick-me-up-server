@@ -63,7 +63,7 @@ public class UserController {
 		return optionalUser.<ResponseEntity<Object>>map(
 			user -> ResponseEntity.ok().body(user.toUserInfoDto()))
 			.orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)));
 	}
 
 	@PutMapping("/users/{id}")
@@ -76,7 +76,7 @@ public class UserController {
 		Optional<User> optionalUser = userService.findById(id);
 		if (!optionalUser.isPresent()) {
 			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
 		}
 		userService.updateUserInfo(optionalUser.get(), userUpdateDto);
 		return ResponseEntity.ok().build();
@@ -88,7 +88,7 @@ public class UserController {
 		return optionalUser.<ResponseEntity<Object>>map(
 			user -> ResponseEntity.ok().body(userService.getUserProjects(user)))
 			.orElseGet(() -> ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)));
 	}
 
 	@GetMapping("/users/{id}/portfolios")
@@ -97,6 +97,6 @@ public class UserController {
 		return optionalUser.<ResponseEntity<Object>>map(
 				user -> ResponseEntity.ok().body(userService.getUserPortfolios(user)))
 				.orElseGet(() -> ResponseEntity.badRequest()
-						.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER)));
+						.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)));
 	}
 }
