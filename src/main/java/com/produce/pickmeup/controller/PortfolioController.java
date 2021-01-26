@@ -2,16 +2,21 @@ package com.produce.pickmeup.controller;
 
 import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
 import com.produce.pickmeup.service.PortfolioService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @AllArgsConstructor
@@ -49,5 +54,14 @@ public class PortfolioController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
 		}
 		return ResponseEntity.created(URI.create("/portfolios/" + result)).build();
+	}
+
+	@GetMapping("/portfolios/{id}")
+	public ResponseEntity<Object> getPortfolioDetail(@PathVariable Long id) {
+		Optional<Portfolio> portfolio = portfolioService.getPortfolio(id);
+		return portfolio.<ResponseEntity<Object>>map(
+			value -> ResponseEntity.ok(portfolioService.getPortfolioDetail(value)))
+			.orElseGet(() -> ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PORTFOLIO)));
 	}
 }
