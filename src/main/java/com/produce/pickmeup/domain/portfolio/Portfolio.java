@@ -108,4 +108,12 @@ public class Portfolio {
 	public void upViewNum() {
 		this.viewNum++;
 	}
+
+	public void updateExceptTags(PortfolioRequestDto portfolioRequestDto) {
+		this.title = portfolioRequestDto.getTitle();
+		this.content = portfolioRequestDto.getContent();
+		this.category = portfolioRequestDto.getCategory();
+		this.recruitmentField = portfolioRequestDto.getRecruitmentField();
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
+	}
 }
