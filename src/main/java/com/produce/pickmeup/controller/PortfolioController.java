@@ -4,8 +4,8 @@ import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.user.User;
-import com.produce.pickmeup.domain.user.UserRepository;
 import com.produce.pickmeup.service.PortfolioService;
 import com.produce.pickmeup.service.UserService;
 import lombok.AllArgsConstructor;
@@ -88,5 +88,17 @@ public class PortfolioController {
 		}
 		portfolioService.updatePortfolio(portfolio.get(), portfolioRequestDto);
 		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/portfolios/{id}")
+	public ResponseEntity<Object> deletePortfolio(@PathVariable Long id) {
+		Optional<Portfolio> portfolio = portfolioService.getPortfolio(id);
+		if (!portfolio.isPresent()) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PORTFOLIO_ERROR));
+		}
+		portfolioService.deletePortfolio(portfolio.get());
+		return ResponseEntity.noContent().build();
 	}
 }
