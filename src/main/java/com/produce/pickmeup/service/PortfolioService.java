@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class PortfolioService {
 
 	private final TagRepository tagRepository;
-	private final UserRepository userRepository;
 	private final PortfolioRepository portfolioRepository;
 	private final PortfolioHasTagRepository relationRepository;
 
@@ -121,5 +120,10 @@ public class PortfolioService {
 			tagRepository.findByTagName(value).ifPresent(tag ->
 				relationRepository.deleteByPortfolioAndPortfolioTag(portfolio, tag))
 		);
+	}
+
+	@Transactional
+	public void deletePortfolio(Portfolio portfolio) {
+		portfolioRepository.delete(portfolio);
 	}
 }
