@@ -67,15 +67,18 @@ public class PortfolioService {
 		}
 	}
 
+	@Transactional
 	private Tag addPortfolioTag(String tagName) {
 		return tagRepository.save(
 			Tag.builder().tagName(tagName).build());
 	}
 
+	@Transactional
 	public Optional<Portfolio> getPortfolio(Long portfolioId) {
 		return portfolioRepository.findById(portfolioId);
 	}
 
+	@Transactional
 	public PortfolioDetailResponseDto getPortfolioDetail(Portfolio portfolio) {
 		portfolio.upViewNum();
 		List<PortfolioHasTag> relations = portfolio.getPortfolioTags();
@@ -112,7 +115,8 @@ public class PortfolioService {
 		portfolioConnectTags(newTagNames, portfolio);
 	}
 
-	private void deletePortfolioTagRelations(Portfolio portfolio, List<String> disconnectTagNames) {
+	@Transactional
+	public void deletePortfolioTagRelations(Portfolio portfolio, List<String> disconnectTagNames) {
 		disconnectTagNames.forEach(value ->
 			tagRepository.findByTagName(value).ifPresent(tag ->
 				relationRepository.deleteByPortfolioAndPortfolioTag(portfolio, tag))
