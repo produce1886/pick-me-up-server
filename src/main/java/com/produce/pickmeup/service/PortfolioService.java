@@ -1,9 +1,12 @@
 package com.produce.pickmeup.service;
 
-import com.produce.pickmeup.common.ErrorCase;
-import com.produce.pickmeup.domain.portfolio.*;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
+import com.produce.pickmeup.domain.portfolio.PortfolioDetailResponseDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
+import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.tag.*;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.domain.user.UserRepository;
@@ -11,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,45 +41,30 @@ public class PortfolioService {
 	}
 
 	@Transactional
-	public String addPortfolio(PortfolioRequestDto portfolioRequestDto) {
-
-		Optional<User> author = userRepository.findByEmail(portfolioRequestDto.getAuthorEmail());
-		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER_ERROR;
-		}
-		long result = portfolioRepository.save(
+	public String addPortfolio(PortfolioRequestDto portfolioRequestDto, User author) {
+		Portfolio portfolio = portfolioRepository.save(
 			Portfolio.builder()
-				.author(author.get())
+				.author(author)
 				.title(portfolioRequestDto.getTitle())
 				.content(portfolioRequestDto.getContent())
 				.category(portfolioRequestDto.getCategory())
 				.recruitmentField(portfolioRequestDto.getRecruitmentField())
-				.image(portfolioRequestDto.getImage())
-				.build())
-			.getId();
-		if (!portfolioConnectTags(portfolioRequestDto.getPortfolioTags(), result)) {
-			return ErrorCase.FAIL_TAG_SAVE_ERROR;
-		}
-		return String.valueOf(result);
+				.build());
+		portfolioConnectTags(portfolioRequestDto.getPortfolioTags(), portfolio);
+		return String.valueOf(portfolio.getId());
 	}
 
 	@Transactional
-	public boolean portfolioConnectTags(List<String> portfolioTags, long portfolioId) {
-		Optional<Portfolio> savePortfolio = portfolioRepository.findById(portfolioId);
-		if (!savePortfolio.isPresent()) {
-			return false;
-		}
+	public void portfolioConnectTags(List<String> portfolioTags, Portfolio savedPortfolio) {
 		for (String tagName : portfolioTags) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addPortfolioTag(tagName));
 			relationRepository.save(
 				PortfolioHasTag.builder()
-					.portfolio(savePortfolio.get())
-					.tag(tag)
-					.build()
+					.portfolio(savedPortfolio)
+					.tag(tag).build()
 			);
 		}
-		return true;
 	}
 
 	private Tag addPortfolioTag(String tagName) {
@@ -99,5 +88,34 @@ public class PortfolioService {
 			.map(PortfolioHasTag::getPortfolioTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
 		return portfolio.toDetailResponseDto(PortfolioTags, comments);
+	}
+
+	public boolean checkPortfolioAuthorEmail(Portfolio portfolio, String authorEmail) {
+		return portfolio.getAuthorEmail().equals(authorEmail);
+	}
+
+	@Transactional
+	public void updatePortfolio(Portfolio portfolio, PortfolioRequestDto portfolioRequestDto) {
+		portfolio.updateExceptTags(portfolioRequestDto);
+
+		List<String> originalTagNames
+			= getPortfolioTagNames(portfolio).stream().map(TagDto::getTagName).collect(Collectors.toList());
+		List<String> newTagNames = portfolioRequestDto.getPortfolioTags();
+		List<String> disconnectTagNames = new ArrayList<>(); // 없앨 친구들 고름
+		for (String tagName : originalTagNames) {
+			if (!newTagNames.contains(tagName)) {
+				disconnectTagNames.add(tagName);
+			}
+		}
+		newTagNames.removeIf(originalTagNames::contains); //new
+		deletePortfolioTagRelations(portfolio, disconnectTagNames);
+		portfolioConnectTags(newTagNames, portfolio);
+	}
+
+	private void deletePortfolioTagRelations(Portfolio portfolio, List<String> disconnectTagNames) {
+		disconnectTagNames.forEach(value ->
+			tagRepository.findByTagName(value).ifPresent(tag ->
+				relationRepository.deleteByPortfolioAndPortfolioTag(portfolio, tag))
+		);
 	}
 }
