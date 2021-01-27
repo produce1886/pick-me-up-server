@@ -4,19 +4,22 @@ import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
-import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.service.PortfolioService;
 import com.produce.pickmeup.service.UserService;
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @AllArgsConstructor
@@ -37,7 +40,8 @@ public class PortfolioController {
 	}
 
 	@PostMapping("/portfolios")
-	public ResponseEntity<Object> addPortfolio(@RequestBody PortfolioRequestDto portfolioRequestDto){
+	public ResponseEntity<Object> addPortfolio(
+		@RequestBody PortfolioRequestDto portfolioRequestDto) {
 		if (!isRequestBodyValid(portfolioRequestDto)) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
@@ -52,7 +56,7 @@ public class PortfolioController {
 		String result = portfolioService.addPortfolio(portfolioRequestDto, author.get());
 		if (INTERNAL_ERROR_LIST.contains(result)) {
 			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
 		}
 		return ResponseEntity.created(URI.create("/portfolios/" + result)).build();
@@ -64,7 +68,8 @@ public class PortfolioController {
 		return portfolio.<ResponseEntity<Object>>map(
 			value -> ResponseEntity.ok(portfolioService.getPortfolioDetail(value)))
 			.orElseGet(() -> ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PORTFOLIO_ERROR)));
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PORTFOLIO_ERROR)));
 	}
 
 	@PutMapping("/portfolios/{id}")
