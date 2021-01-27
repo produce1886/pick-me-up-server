@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PortfolioHasTagRepository extends JpaRepository<PortfolioHasTag, Long> {
 	List<PortfolioHasTag> findByPortfolio(Portfolio portfolio);
+	void deleteByPortfolioAndPortfolioTag(Portfolio portfolio, Tag tag);
 }
