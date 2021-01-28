@@ -4,6 +4,7 @@ import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectRepository;
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
+import com.produce.pickmeup.domain.project.comment.ProjectCommentDetailResponseDto;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRepository;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRequestDto;
 import com.produce.pickmeup.domain.user.User;
@@ -39,5 +40,17 @@ public class ProjectCommentService {
 			.getId();
 		project.get().upCommentsNum();
 		return String.valueOf(result);
+	}
+
+	public Optional<ProjectComment> getProjectComment(Long projectCommentId) {
+		return projectCommentRepository.findById(projectCommentId);
+	}
+
+	public ProjectCommentDetailResponseDto getCommentDetail(ProjectComment comment) {
+		return comment.toDetailResponseDto();
+	}
+
+	public boolean isLinked(ProjectComment projectComment, Long id) {
+		return projectComment.getProject().getId() == id;
 	}
 }
