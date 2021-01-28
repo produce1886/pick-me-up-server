@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -122,6 +123,16 @@ public class ProjectController {
 		}
 		projectService.deleteProject(project.get());
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/projects/list")
+	public ResponseEntity<Object> getProjectsList(final Pageable pageable,
+		@RequestParam String category, @RequestParam String recruitmentField,
+		@RequestParam String region, @RequestParam String projectSection,
+		@RequestParam String keyword) {
+		return ResponseEntity.ok(
+			projectService.getProjectsList(pageable, category, recruitmentField, region,
+				projectSection, keyword));
 	}
 
 	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
