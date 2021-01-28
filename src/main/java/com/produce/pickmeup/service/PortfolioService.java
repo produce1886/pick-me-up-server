@@ -6,19 +6,20 @@ import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
-import com.produce.pickmeup.domain.portfolio.Portfolio;
-import com.produce.pickmeup.domain.tag.*;
+import com.produce.pickmeup.domain.tag.PortfolioHasTag;
+import com.produce.pickmeup.domain.tag.PortfolioHasTagRepository;
+import com.produce.pickmeup.domain.tag.Tag;
+import com.produce.pickmeup.domain.tag.TagDto;
+import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
-import com.produce.pickmeup.domain.user.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
@@ -67,7 +68,7 @@ public class PortfolioService {
 	}
 
 	@Transactional
-	private Tag addPortfolioTag(String tagName) {
+	public Tag addPortfolioTag(String tagName) {
 		return tagRepository.save(
 			Tag.builder().tagName(tagName).build());
 	}
@@ -101,7 +102,8 @@ public class PortfolioService {
 		portfolio.updateExceptTags(portfolioRequestDto);
 
 		List<String> originalTagNames
-			= getPortfolioTagNames(portfolio).stream().map(TagDto::getTagName).collect(Collectors.toList());
+			= getPortfolioTagNames(portfolio).stream().map(TagDto::getTagName)
+			.collect(Collectors.toList());
 		List<String> newTagNames = portfolioRequestDto.getPortfolioTags();
 		List<String> disconnectTagNames = new ArrayList<>(); // 없앨 친구들 고름
 		for (String tagName : originalTagNames) {
