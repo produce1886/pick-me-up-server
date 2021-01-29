@@ -38,6 +38,10 @@ public class ProjectCommentService {
 		return comment.toDetailResponseDto();
 	}
 
+	public boolean checkProjectCommentAuthorEmail(ProjectComment comment, String authorEmail) {
+		return comment.getAuthorEmail().equals(authorEmail);
+	}
+
 	public boolean isLinked(ProjectComment projectComment, Long projectId) {
 		return projectComment.getProject().getId() == projectId;
 	}
