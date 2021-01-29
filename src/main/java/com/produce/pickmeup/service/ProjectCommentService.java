@@ -1,7 +1,6 @@
 package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.domain.project.Project;
-import com.produce.pickmeup.domain.project.ProjectRepository;
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentDetailResponseDto;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRepository;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ProjectCommentService {
 	private final ProjectCommentRepository projectCommentRepository;
-	private final ProjectRepository projectRepository;
 
 	@Transactional
 	public String addProjectComment(User author, Project project,
