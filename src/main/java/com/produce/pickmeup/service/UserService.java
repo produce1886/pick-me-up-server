@@ -1,6 +1,5 @@
 package com.produce.pickmeup.service;
 
-import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.login.LoginRequestDto;
 import com.produce.pickmeup.domain.login.LoginResponseDto;
 import com.produce.pickmeup.domain.portfolio.Portfolio;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserService {
 	private final String PROFILE_IMAGE_PATH = "profile-image";
-	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
 	private final PortfolioService portfolioService;
 	private final ProjectService projectService;

@@ -2,7 +2,6 @@ package com.produce.pickmeup.service;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectDetailResponseDto;
 import com.produce.pickmeup.domain.project.ProjectDto;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Service;
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProjectService {
 	private final String PROJECT_IMAGE_PATH = "project-image";
-	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
 	private final ProjectRepository projectRepository;
 	private final TagRepository tagRepository;
