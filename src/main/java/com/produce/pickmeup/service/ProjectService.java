@@ -9,6 +9,7 @@ import com.produce.pickmeup.domain.project.ProjectDto;
 import com.produce.pickmeup.domain.project.ProjectListResponseDto;
 import com.produce.pickmeup.domain.project.ProjectRepository;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
+import com.produce.pickmeup.domain.project.ProjectSpecification;
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentResponseDto;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
@@ -26,6 +27,7 @@ import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -153,75 +155,31 @@ public class ProjectService {
 		projectRepository.delete(project);
 	}
 
-	public ProjectListResponseDto getProjectsList(Pageable pageable, String category, String recruitmentField, String region, String projectSection, String keyword) {
-		if (category.isEmpty() && recruitmentField.isEmpty() && region.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAll(pageable));
-
-		if (recruitmentField.isEmpty() && region.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategory(category, pageable));
-		if (category.isEmpty() && region.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentField(recruitmentField, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRegion(region, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && region.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByProjectSection(projectSection, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && region.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByContentContaining(keyword, pageable));
-
-		if (region.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentField(category, recruitmentField, pageable));
-		if (recruitmentField.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRegion(category, region, pageable));
-		if (recruitmentField.isEmpty() && region.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndProjectSection(category, projectSection, pageable));
-		if (recruitmentField.isEmpty() && region.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndContentContaining(category, keyword, pageable));
-		if (category.isEmpty() && projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndRegion(recruitmentField, region, pageable));
-		if (category.isEmpty() && region.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndProjectSection(recruitmentField, projectSection, pageable));
-		if (category.isEmpty() && region.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndContentContaining(recruitmentField, keyword, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRegionAndProjectSection(region, projectSection, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRegionAndContentContaining(region, keyword, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty() && region.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByProjectSectionAndContentContaining(projectSection, keyword, pageable));
-
-		if (projectSection.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndRegion(category, recruitmentField, region, pageable));
-		if (region.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndProjectSection(category, recruitmentField, projectSection, pageable));
-		if (region.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndContentContaining(category, recruitmentField, keyword, pageable));
-		if (recruitmentField.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRegionAndProjectSection(category, region, projectSection, pageable));
-		if (recruitmentField.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRegionAndContentContaining(category, region, keyword, pageable));
-		if (recruitmentField.isEmpty() && region.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndProjectSectionAndContentContaining(category, projectSection, keyword, pageable));
-		if (category.isEmpty() && keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndRegionAndProjectSection(recruitmentField, region, projectSection, pageable));
-		if (category.isEmpty() && projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndRegionAndContentContaining(recruitmentField, region, keyword, pageable));
-		if (category.isEmpty() && region.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndProjectSectionAndContentContaining(recruitmentField, projectSection, keyword, pageable));
-		if (category.isEmpty() && recruitmentField.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRegionAndProjectSectionAndContentContaining(region, projectSection, keyword, pageable));
-
-		if (keyword.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndRegionAndProjectSection(category, recruitmentField, region, projectSection, pageable));
-		if (projectSection.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndRegionAndContentContaining(category, recruitmentField, region, keyword, pageable));
-		if (region.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndProjectSectionAndContentContaining(category, recruitmentField, projectSection, keyword, pageable));
-		if (recruitmentField.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByCategoryAndRegionAndProjectSectionAndContentContaining(category, region, projectSection, keyword, pageable));
-		if (category.isEmpty())
-			return pageToListResponseDto(projectRepository.findAllByRecruitmentFieldAndRegionAndProjectSectionAndContentContaining(recruitmentField, region, projectSection, keyword, pageable));
-
-		return pageToListResponseDto(projectRepository.findAllByCategoryAndRecruitmentFieldAndRegionAndProjectSectionAndContentContaining(category, recruitmentField, region, projectSection, keyword, pageable));
+	@Transactional
+	public ProjectListResponseDto getProjectsList(Pageable pageable, String category,
+		String recruitmentField, String region, String projectSection, String keyword) {
+		Specification<Project> specification = Specification.where(null);
+		if (!category.isEmpty()) {
+			specification = specification
+				.and(Specification.where(ProjectSpecification.ByCategory(category)));
+		}
+		if (!recruitmentField.isEmpty()) {
+			specification = specification.and(
+				Specification.where(ProjectSpecification.ByRecruitmentField(recruitmentField)));
+		}
+		if (!region.isEmpty()) {
+			specification = specification
+				.and(Specification.where(ProjectSpecification.ByRegion(region)));
+		}
+		if (!projectSection.isEmpty()) {
+			specification = specification
+				.and(Specification.where(ProjectSpecification.ByProjectSection(projectSection)));
+		}
+		if (!keyword.isEmpty()) {
+			specification = specification
+				.and(Specification.where(ProjectSpecification.ByKeyword(keyword)));
+		}
+		return pageToListResponseDto(projectRepository.findAll(specification, pageable));
 	}
 
 	private ProjectListResponseDto pageToListResponseDto(Page<Project> pages) {
@@ -230,7 +188,7 @@ public class ProjectService {
 			projectDtoList.add(project.toProjectDto(getProjectTagNames(project)));
 		}
 		return ProjectListResponseDto.builder()
-			.totalNum(projectDtoList.size())
+			.totalNum((int) pages.getTotalElements())
 			.projectList(projectDtoList)
 			.build();
 	}
