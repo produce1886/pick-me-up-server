@@ -22,23 +22,15 @@ public class ProjectCommentService {
 	private final ProjectRepository projectRepository;
 
 	@Transactional
-	public String addProjectComment(ProjectCommentRequestDto projectCommentRequestDto, Long projectId) {
-		Optional<User> author = userRepository.findByEmail(projectCommentRequestDto.getEmail());
-		Optional<Project> project = projectRepository.findById(projectId);
-		if (!author.isPresent()) {
-			return ErrorCase.NO_SUCH_USER_ERROR;
-		}
-		if (!project.isPresent()) {
-			return ErrorCase.NO_SUCH_PROJECT_ERROR;
-		}
+	public String addProjectComment(User author, Project project, ProjectCommentRequestDto responseDto) {
 		long result = projectCommentRepository.save(
 			ProjectComment.builder()
-				.author(author.get())
-				.content(projectCommentRequestDto.getContent())
-				.project(project.get())
+				.author(author)
+				.content(responseDto.getContent())
+				.project(project)
 				.build())
 			.getId();
-		project.get().upCommentsNum();
+		project.upCommentsNum();
 		return String.valueOf(result);
 	}
 
