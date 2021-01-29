@@ -99,8 +99,6 @@ public class ProjectController {
 		}
 		if (!projectService.checkProjectAuthorEmail(
 			project.get(), projectRequestDto.getAuthorEmail())) {
-			System.out.println(project.get().getAuthorEmail());
-			System.out.println(projectRequestDto.getAuthorEmail());
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
 		}
@@ -121,9 +119,11 @@ public class ProjectController {
 
 	@GetMapping("/projects/list")
 	public ResponseEntity<Object> getProjectsList(final Pageable pageable,
-		@RequestParam String category, @RequestParam String recruitmentField,
-		@RequestParam String region, @RequestParam String projectSection,
-		@RequestParam String keyword) {
+		@RequestParam(required = false) String category,
+		@RequestParam(required = false) String recruitmentField,
+		@RequestParam(required = false) String region,
+		@RequestParam(required = false) String projectSection,
+		@RequestParam(required = false) String keyword) {
 		return ResponseEntity.ok(
 			projectService.getProjectsList(pageable, category, recruitmentField, region,
 				projectSection, keyword));
