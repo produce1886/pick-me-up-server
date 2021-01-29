@@ -61,4 +61,18 @@ public class ProjectComment {
 			.user(author.toResponseDto())
 			.build();
 	}
+
+	public ProjectCommentDetailResponseDto toDetailResponseDto() {
+		return ProjectCommentDetailResponseDto.builder()
+			.id(id)
+			.content(content)
+			.authorEmail(authorEmail)
+			.createdDate(createdDate)
+			.modifiedDate(modifiedDate)
+			.build();
+	}
+
+	public void updateContent(ProjectCommentRequestDto projectCommentUpdateDto) {
+		this.content = projectCommentUpdateDto.getContent();
+	}
 }

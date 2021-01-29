@@ -2,7 +2,6 @@ package com.produce.pickmeup.service;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.produce.pickmeup.common.ErrorCase;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectDetailResponseDto;
 import com.produce.pickmeup.domain.project.ProjectDto;
@@ -18,6 +17,7 @@ import com.produce.pickmeup.domain.tag.Tag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,14 +29,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProjectService {
 	private final String PROJECT_IMAGE_PATH = "project-image";
-	private final List<String> ERROR_LIST = ErrorCase.getAllErrorList();
 
 	private final ProjectRepository projectRepository;
 	private final TagRepository tagRepository;
@@ -110,12 +108,9 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public String updateProjectImage(MultipartFile multipartFile, Project project) {
-		String result = s3Uploader.upload(multipartFile, PROJECT_IMAGE_PATH,
-			String.valueOf(project.getId()));
-		if (ERROR_LIST.contains(result)) {
-			return result;
-		}
+	public String updateProjectImage(File convertedFile, Project project) {
+		String result = s3Uploader
+			.upload(convertedFile, PROJECT_IMAGE_PATH, String.valueOf(project.getId()));
 		project.updateImage(result);
 		return result;
 	}

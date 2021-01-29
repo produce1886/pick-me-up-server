@@ -8,7 +8,6 @@ import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.service.PortfolioService;
 import com.produce.pickmeup.service.UserService;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,9 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @AllArgsConstructor
 public class PortfolioController {
-
-	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
-	private final List<String> INTERNAL_ERROR_LIST = ErrorCase.getInternalErrorList();
 	private final UserService userService;
 	private final PortfolioService portfolioService;
 
@@ -54,11 +50,6 @@ public class PortfolioController {
 			);
 		}
 		String result = portfolioService.addPortfolio(portfolioRequestDto, author.get());
-		if (INTERNAL_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
-		}
 		return ResponseEntity.created(URI.create("/portfolios/" + result)).build();
 	}
 
