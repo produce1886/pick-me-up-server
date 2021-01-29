@@ -12,6 +12,7 @@ import com.produce.pickmeup.domain.project.ProjectListResponseDto;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.domain.user.UserRepository;
 import com.produce.pickmeup.domain.user.UserUpdateDto;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,16 +44,9 @@ public class UserService {
 	}
 
 	@Transactional
-	public String updateUserImage(MultipartFile multipartFile, Long id) {
-		Optional<User> user = userRepository.findById(id);
-		if (!user.isPresent()) {
-			return ErrorCase.NO_SUCH_USER_ERROR;
-		}
-		String result = s3Uploader.upload(multipartFile, PROFILE_IMAGE_PATH, id.toString());
-		if (ERROR_LIST.contains(result)) {
-			return result;
-		}
-		user.get().updateImage(result);
+	public String updateUserImage(File convertedFile, Long id, User user) {
+		String result = s3Uploader.upload(convertedFile, PROFILE_IMAGE_PATH, id.toString());
+		user.updateImage(result);
 		return result;
 	}
 
