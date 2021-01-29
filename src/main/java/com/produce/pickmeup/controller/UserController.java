@@ -59,7 +59,7 @@ public class UserController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
 					ErrorCase.INVALID_FILE_TYPE_ERROR));
 		}
-		String result = userService.updateUserImage(convertedFile, id, user.get());
+		String result = userService.updateUserImage(convertedFile, user.get());
 		return ResponseEntity.created(URI.create(result)).build();
 	}
 
