@@ -87,6 +87,11 @@ public class ProjectCommentController {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
+		if (!projectCommentService.checkProjectCommentAuthorEmail(projectComment.get(),
+			projectCommentRequestDto.getEmail())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
+		}
 		projectCommentService.updateProjectComment(projectComment.get(), projectCommentRequestDto);
 		return ResponseEntity.ok().build();
 	}
