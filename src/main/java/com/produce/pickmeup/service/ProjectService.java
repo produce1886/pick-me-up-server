@@ -18,6 +18,7 @@ import com.produce.pickmeup.domain.tag.Tag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.tag.TagRepository;
 import com.produce.pickmeup.domain.user.User;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -110,12 +110,9 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public String updateProjectImage(MultipartFile multipartFile, Project project) {
-		String result = s3Uploader.upload(multipartFile, PROJECT_IMAGE_PATH,
-			String.valueOf(project.getId()));
-		if (ERROR_LIST.contains(result)) {
-			return result;
-		}
+	public String updateProjectImage(File convertedFile, Project project) {
+		String result = s3Uploader
+			.upload(convertedFile, PROJECT_IMAGE_PATH, String.valueOf(project.getId()));
 		project.updateImage(result);
 		return result;
 	}
