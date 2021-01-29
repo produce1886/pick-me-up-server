@@ -10,7 +10,6 @@ import com.produce.pickmeup.service.S3Uploader;
 import com.produce.pickmeup.service.UserService;
 import java.io.File;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,8 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @AllArgsConstructor
 public class UserController {
-	private final List<String> INTERNAL_ERROR_LIST = ErrorCase.getInternalErrorList();
-	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final UserService userService;
 	private final S3Uploader uploaderService;
 
@@ -80,15 +77,13 @@ public class UserController {
 	public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDto userUpdateDto,
 		@PathVariable Long id) {
 		if (userUpdateDto.getUsername() == null) {
-			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.INVALID_FIELD_ERROR));
+			return ResponseEntity.badRequest().body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+				ErrorCase.INVALID_FIELD_ERROR));
 		}
 		Optional<User> optionalUser = userService.findById(id);
 		if (!optionalUser.isPresent()) {
-			return ResponseEntity.badRequest()
-				.body(
-					new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
 		}
 		userService.updateUserInfo(optionalUser.get(), userUpdateDto);
 		return ResponseEntity.ok().build();
