@@ -35,18 +35,19 @@ public class ProjectCommentController {
 	public ResponseEntity<Object> addProjectComment(@PathVariable Long id,
 		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
 		Optional<User> author = userService.findByEmail(projectCommentRequestDto.getEmail());
-		Optional<Project> project = projectService.getProject(id);
 		if (!author.isPresent()) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)
 			);
 		}
+		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR)
 			);
 		}
-		String result = projectCommentService.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
+		String result = projectCommentService
+			.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
 		return ResponseEntity.created(URI.create("/projects/" + id + "/comments" + result)).build();
 	}
 
@@ -76,14 +77,24 @@ public class ProjectCommentController {
 	public ResponseEntity<Object> updateProjectComment(@PathVariable Long id,
 		@PathVariable Long commentId,
 		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
-
-		String result = projectCommentService
-			.updateProjectComment(id, commentId, projectCommentRequestDto);
-		if (REQUEST_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
+		Optional<Project> project = projectService.getProject(id);
+		if (!project.isPresent()) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
+		Optional<ProjectComment> projectComment = projectCommentService
+			.getProjectComment(commentId);
+		if (!projectComment.isPresent()) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR)
+			);
+		}
+		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR)
+			);
+		}
+		projectCommentService.updateProjectComment(projectComment.get(), projectCommentRequestDto);
 		return ResponseEntity.ok().build();
 	}
 
