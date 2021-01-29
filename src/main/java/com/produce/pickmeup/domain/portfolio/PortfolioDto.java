@@ -22,5 +22,5 @@ public class PortfolioDto {
 	private final long viewNum;
 	private final String category;
 	private final String recruitmentField;
-	private final List<TagDto> portfolioTag;
+	private final List<TagDto> portfolioTags;
 }
