@@ -53,4 +53,21 @@ public class ProjectCommentService {
 	public boolean isLinked(ProjectComment projectComment, Long projectId) {
 		return projectComment.getProject().getId() == projectId;
 	}
+
+	public String isBadRequest(Long projectId, Long projectCommentId){
+		Optional<Project> project = projectRepository.findById(projectId);
+		if (!project.isPresent())
+			return ErrorCase.NO_SUCH_PROJECT_ERROR;
+		Optional<ProjectComment> projectComment = projectCommentRepository.findById(projectCommentId);
+		if (!projectComment.isPresent())
+			return ErrorCase.NO_SUCH_COMMENT_ERROR;
+		if (!isLinked(projectComment.get(), projectId))
+			return ErrorCase.BAD_REQUEST_ERROR;
+		return "";
+	}
+
+	@Transactional
+	public void deleteCommentDetail(Long projectCommentId) {
+		projectCommentRepository.deleteById(projectCommentId);
+	}
 }
