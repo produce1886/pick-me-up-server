@@ -44,7 +44,7 @@ public class ProjectCommentController {
 		}
 		String result = projectCommentService
 			.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
-		return ResponseEntity.created(URI.create("/projects/" + id + "/comments" + result)).build();
+		return ResponseEntity.created(URI.create("/projects/" + id + "/comments/" + result)).build();
 	}
 
 	@GetMapping("/projects/{id}/comments/{commentId}")
