@@ -10,7 +10,6 @@ import com.produce.pickmeup.service.ProjectCommentService;
 import com.produce.pickmeup.service.ProjectService;
 import com.produce.pickmeup.service.UserService;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @AllArgsConstructor
 public class ProjectCommentController {
-	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final ProjectService projectService;
 	private final ProjectCommentService projectCommentService;
 	private final UserService userService;
@@ -37,14 +35,12 @@ public class ProjectCommentController {
 		Optional<User> author = userService.findByEmail(projectCommentRequestDto.getEmail());
 		if (!author.isPresent()) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)
-			);
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
 		}
 		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR)
-			);
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		String result = projectCommentService
 			.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
@@ -65,8 +61,7 @@ public class ProjectCommentController {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
 		}
-		boolean isLinked = projectCommentService.isLinked(projectComment.get(), id);
-		if (!isLinked) {
+		if (!projectCommentService.isLinked(projectComment.get(), id)) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
@@ -86,13 +81,11 @@ public class ProjectCommentController {
 			.getProjectComment(commentId);
 		if (!projectComment.isPresent()) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR)
-			);
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
 		}
 		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR)
-			);
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
 		projectCommentService.updateProjectComment(projectComment.get(), projectCommentRequestDto);
 		return ResponseEntity.ok().build();
@@ -101,10 +94,20 @@ public class ProjectCommentController {
 	@DeleteMapping("/projects/{id}/comments/{commentId}")
 	public ResponseEntity<Object> deleteProjectComment(@PathVariable Long id,
 		@PathVariable Long commentId) {
-		String errorResult = projectCommentService.isBadRequest(id, commentId);
-		if (REQUEST_ERROR_LIST.contains(errorResult)) {
+		Optional<Project> project = projectService.getProject(id);
+		if (!project.isPresent()) {
 			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), errorResult));
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
+		}
+		Optional<ProjectComment> projectComment = projectCommentService
+			.getProjectComment(commentId);
+		if (!projectComment.isPresent()) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
+		}
+		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
 		projectCommentService.deleteCommentDetail(commentId);
 		return ResponseEntity.noContent().build();
