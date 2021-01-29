@@ -71,4 +71,8 @@ public class ProjectComment {
 			.modifiedDate(modifiedDate)
 			.build();
 	}
+
+	public void updateContent(ProjectCommentRequestDto projectCommentUpdateDto) {
+		this.content = projectCommentUpdateDto.getContent();
+	}
 }
