@@ -52,4 +52,14 @@ public class ProjectCommentController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		return ResponseEntity.ok(projectCommentService.getCommentDetail(projectComment.get()));
 	}
+
+	@DeleteMapping("/projects/{id}/comments/{commentId}")
+	public ResponseEntity<Object> deleteProjectComment(@PathVariable Long id, @PathVariable Long commentId) {
+		String errorResult = projectCommentService.isBadRequest(id, commentId);
+		if (REQUEST_ERROR_LIST.contains(errorResult))
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), errorResult));
+		projectCommentService.deleteCommentDetail(commentId);
+		return ResponseEntity.noContent().build();
+	}
 }
