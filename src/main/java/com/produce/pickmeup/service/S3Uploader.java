@@ -25,19 +25,7 @@ public class S3Uploader {
 	@Value("${cloud.aws.s3.bucket}")
 	public String bucket;
 
-	public String upload(MultipartFile multipartFile, String dirName, String id) {
-		try {
-			File convertedFile = convert(multipartFile);
-			if (convertedFile == null) {
-				return ErrorCase.FAIL_FILE_CONVERT_ERROR;
-			}
-			return upload(convertedFile, dirName, id);
-		} catch (Exception e) {
-			return ErrorCase.FAIL_FILE_SAVE_ERROR;
-		}
-	}
-
-	private File convert(MultipartFile file) {
+	public File convert(MultipartFile file) {
 		File convertFile = new File(TEMP_FILE_PATH + file.getOriginalFilename());
 		try {
 			if (convertFile.createNewFile()) {
@@ -47,25 +35,26 @@ public class S3Uploader {
 				return convertFile;
 			}
 		} catch (Exception e) {
-			e.printStackTrace(); //for logging
+			System.err.println(e.getMessage());
 		}
 		return null;
 	}
 
-	private String upload(File uploadFile, String dirName, String id) {
-		String extension = getExtension(uploadFile.getName()).toLowerCase();
-		if (!IMAGE_EXTENSIONS.contains(extension)) {
-			deleteLocalFile(uploadFile);
-			return ErrorCase.INVALID_FILE_TYPE_ERROR;
-		}
-		String fileName = dirName + "/" + id + extension;
+	public String upload(File uploadFile, String dirName, String id) {
+		String fileName = dirName + "/" + id;
 		String uploadImageUrl = putS3(uploadFile, fileName);
 		deleteLocalFile(uploadFile);
 		return uploadImageUrl;
 	}
 
-	private String getExtension(String fileName) {
-		return "." + fileName.substring(fileName.lastIndexOf(".") + 1);
+	public boolean isValidExtension(File uploadFile) {
+		String fileName = uploadFile.getName();
+		String extension = "." + fileName.substring(fileName.toLowerCase().lastIndexOf(".") + 1);
+		if (!IMAGE_EXTENSIONS.contains(extension)) {
+			deleteLocalFile(uploadFile);
+			return false;
+		}
+		return true;
 	}
 
 	private String putS3(File uploadFile, String fileName) {
@@ -77,7 +66,7 @@ public class S3Uploader {
 
 	private void deleteLocalFile(File uploadFile) {
 		if (!uploadFile.delete()) {
-			System.out.println(ErrorCase.FAIL_FILE_DELETE_ERROR);
+			System.err.println(ErrorCase.FAIL_FILE_DELETE_ERROR);
 		}
 	}
 }
