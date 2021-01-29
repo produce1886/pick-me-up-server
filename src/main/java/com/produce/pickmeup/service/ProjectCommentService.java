@@ -50,7 +50,7 @@ public class ProjectCommentService {
 		return comment.toDetailResponseDto();
 	}
 
-	public boolean isLinked(ProjectComment projectComment, Long id) {
-		return projectComment.getProject().getId() == id;
+	public boolean isLinked(ProjectComment projectComment, Long projectId) {
+		return projectComment.getProject().getId() == projectId;
 	}
 }
