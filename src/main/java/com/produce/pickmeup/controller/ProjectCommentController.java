@@ -53,6 +53,19 @@ public class ProjectCommentController {
 		return ResponseEntity.ok(projectCommentService.getCommentDetail(projectComment.get()));
 	}
 
+	@PutMapping("/projects/{id}/comments/{commentId}")
+	public ResponseEntity<Object> updateProjectComment(@PathVariable Long id, @PathVariable Long commentId,
+		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
+
+		String result = projectCommentService.updateProjectComment(id, commentId, projectCommentRequestDto);
+		if (REQUEST_ERROR_LIST.contains(result)) {
+			return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
+		}
+		return ResponseEntity.ok().build();
+	}
+
 	@DeleteMapping("/projects/{id}/comments/{commentId}")
 	public ResponseEntity<Object> deleteProjectComment(@PathVariable Long id, @PathVariable Long commentId) {
 		String errorResult = projectCommentService.isBadRequest(id, commentId);
