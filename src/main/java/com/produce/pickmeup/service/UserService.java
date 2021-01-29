@@ -19,7 +19,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -44,8 +43,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public String updateUserImage(File convertedFile, Long id, User user) {
-		String result = s3Uploader.upload(convertedFile, PROFILE_IMAGE_PATH, id.toString());
+	public String updateUserImage(File convertedFile, User user) {
+		String result = s3Uploader.upload(convertedFile, PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
 		user.updateImage(result);
 		return result;
 	}
