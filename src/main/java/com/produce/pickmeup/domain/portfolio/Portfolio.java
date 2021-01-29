@@ -80,7 +80,7 @@ public class Portfolio {
 			.recruitmentField(recruitmentField)
 			.viewNum(viewNum)
 			.commentsNum(commentsNum)
-			.portfolioTag(TagDtoList)
+			.portfolioTags(TagDtoList)
 			.createdDate(createdDate)
 			.modifiedDate(modifiedDate)
 			.build();
