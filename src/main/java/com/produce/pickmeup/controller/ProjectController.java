@@ -6,9 +6,10 @@ import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
 import com.produce.pickmeup.domain.user.User;
 import com.produce.pickmeup.service.ProjectService;
+import com.produce.pickmeup.service.S3Uploader;
 import com.produce.pickmeup.service.UserService;
+import java.io.File;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @AllArgsConstructor
 public class ProjectController {
-	private final List<String> INTERNAL_ERROR_LIST = ErrorCase.getInternalErrorList();
-	private final List<String> REQUEST_ERROR_LIST = ErrorCase.getRequestErrorList();
 	private final ProjectService projectService;
 	private final UserService userService;
+	private final S3Uploader uploaderService;
 
 	@PostMapping("/projects")
 	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
@@ -47,11 +47,6 @@ public class ProjectController {
 			);
 		}
 		String result = projectService.addProject(projectRequestDto, author.get());
-		if (INTERNAL_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
-		}
 		return ResponseEntity.created(URI.create("/projects/" + result)).build();
 	}
 
@@ -73,18 +68,18 @@ public class ProjectController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
 					ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
-		String result = projectService.updateProjectImage(multipartFile, project.get());
-
-		if (INTERNAL_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), result));
+		File convertedFile = uploaderService.convert(multipartFile);
+		if (convertedFile == null) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					ErrorCase.FAIL_FILE_CONVERT_ERROR));
 		}
-		if (REQUEST_ERROR_LIST.contains(result)) {
-			return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), result));
+		if (!uploaderService.isValidExtension(convertedFile)) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.INVALID_FILE_TYPE_ERROR));
 		}
+		String result = projectService.updateProjectImage(convertedFile, project.get());
 		return ResponseEntity.created(URI.create(result)).build();
 	}
 
@@ -117,9 +112,8 @@ public class ProjectController {
 	public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
 		Optional<Project> project = projectService.getProject(id);
 		if (!project.isPresent()) {
-			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.NO_SUCH_PROJECT_ERROR));
+			return ResponseEntity.badRequest().body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+				ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		projectService.deleteProject(project.get());
 		return ResponseEntity.noContent().build();
