@@ -48,6 +48,12 @@ public class UserService {
 	}
 
 	@Transactional
+	public void deleteUserImage(User user) {
+		s3Uploader.delete(PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
+		user.updateImage("");
+	}
+
+	@Transactional
 	public Optional<User> findById(Long id) {
 		return userRepository.findById(id);
 	}

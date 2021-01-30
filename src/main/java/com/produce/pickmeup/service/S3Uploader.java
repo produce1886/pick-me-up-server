@@ -57,6 +57,14 @@ public class S3Uploader {
 		return true;
 	}
 
+	public void delete(String dirName, String id) {
+		deleteFromS3(dirName + "/" + id);
+	}
+
+	private void deleteFromS3(String key) {
+		amazonS3Client.deleteObject(bucket, key);
+	}
+
 	private String putS3(File uploadFile, String fileName) {
 		amazonS3Client.putObject(
 			new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(

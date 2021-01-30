@@ -48,6 +48,10 @@ public class UserController {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
 		}
+		if (multipartFile.isEmpty()) {
+			userService.deleteUserImage(user.get());
+			return ResponseEntity.noContent().build();
+		}
 		File convertedFile = uploaderService.convert(multipartFile);
 		if (convertedFile == null) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
