@@ -32,7 +32,7 @@ public class ProjectCommentController {
 	@PostMapping("/projects/{id}/comments")
 	public ResponseEntity<Object> addProjectComment(@PathVariable Long id,
 		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
-		Optional<User> author = userService.findByEmail(projectCommentRequestDto.getEmail());
+		Optional<User> author = userService.findByEmail(projectCommentRequestDto.getAuthorEmail());
 		if (!author.isPresent()) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
@@ -44,7 +44,7 @@ public class ProjectCommentController {
 		}
 		String result = projectCommentService
 			.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
-		return ResponseEntity.created(URI.create("/projects/" + id + "/comments" + result)).build();
+		return ResponseEntity.created(URI.create("/projects/" + id + "/comments/" + result)).build();
 	}
 
 	@GetMapping("/projects/{id}/comments/{commentId}")
@@ -86,6 +86,11 @@ public class ProjectCommentController {
 		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
 			return ResponseEntity.badRequest().body(
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
+		}
+		if (!projectCommentService.checkProjectCommentAuthorEmail(projectComment.get(),
+			projectCommentRequestDto.getAuthorEmail())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
 		}
 		projectCommentService.updateProjectComment(projectComment.get(), projectCommentRequestDto);
 		return ResponseEntity.ok().build();
