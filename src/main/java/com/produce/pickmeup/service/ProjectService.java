@@ -154,23 +154,23 @@ public class ProjectService {
 	public ProjectListResponseDto getProjectsList(Pageable pageable, String category,
 		String recruitmentField, String region, String projectSection, String keyword) {
 		Specification<Project> specification = Specification.where(null);
-		if (!category.isEmpty()) {
+		if (category != null && !category.isEmpty()) {
 			specification = specification
 				.and(Specification.where(ProjectSpecification.ByCategory(category)));
 		}
-		if (!recruitmentField.isEmpty()) {
+		if (recruitmentField != null && !recruitmentField.isEmpty()) {
 			specification = specification.and(
 				Specification.where(ProjectSpecification.ByRecruitmentField(recruitmentField)));
 		}
-		if (!region.isEmpty()) {
+		if (region != null && !region.isEmpty()) {
 			specification = specification
 				.and(Specification.where(ProjectSpecification.ByRegion(region)));
 		}
-		if (!projectSection.isEmpty()) {
+		if (projectSection != null && !projectSection.isEmpty()) {
 			specification = specification
 				.and(Specification.where(ProjectSpecification.ByProjectSection(projectSection)));
 		}
-		if (!keyword.isEmpty()) {
+		if (keyword != null && !keyword.isEmpty()) {
 			specification = specification
 				.and(Specification.where(ProjectSpecification.ByKeyword(keyword)));
 		}
