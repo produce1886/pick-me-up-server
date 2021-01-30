@@ -115,6 +115,12 @@ public class ProjectService {
 		return result;
 	}
 
+	@Transactional
+	public void deleteProjectImage(Project project) {
+		s3Uploader.delete(PROJECT_IMAGE_PATH, String.valueOf(project.getId()));
+		project.updateImage("");
+	}
+
 	public boolean checkProjectAuthorEmail(Project project, String authorEmail) {
 		return project.getAuthorEmail().equals(authorEmail);
 	}
