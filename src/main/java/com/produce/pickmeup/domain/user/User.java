@@ -36,7 +36,6 @@ public class User {
 	private String email;
 	@Column(nullable = false)
 	private String username;
-	@Column(nullable = false)
 	private String image;
 	private String introduce;
 	private Date birth;

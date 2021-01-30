@@ -68,6 +68,10 @@ public class ProjectController {
 				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
 					ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
+		if (multipartFile.isEmpty()) {
+			projectService.deleteProjectImage(project.get());
+			return ResponseEntity.noContent().build();
+		}
 		File convertedFile = uploaderService.convert(multipartFile);
 		if (convertedFile == null) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -114,6 +118,7 @@ public class ProjectController {
 				ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		projectService.deleteProject(project.get());
+		projectService.deleteProjectImage(project.get());
 		return ResponseEntity.noContent().build();
 	}
 
