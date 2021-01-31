@@ -27,4 +27,16 @@ public class PortfolioCommentService {
 		portfolio.upCommentsNum();
 		return String.valueOf(result);
 	}
+
+	public Optional<PortfolioComment> getPortfolioComment(Long portfolioCommentId) {
+		return portfolioCommentRepository.findById(portfolioCommentId);
+	}
+
+	public boolean checkPortfolioCommentAuthorEmail(PortfolioComment comment, String authorEmail) {
+		return comment.getAuthorEmail().equals(authorEmail);
+	}
+
+	public boolean isLinked(PortfolioComment portfolioComment, Long portfolioId) {
+		return portfolioComment.getPortfolio().getId() == portfolioId;
+	}
 }
