@@ -2,6 +2,7 @@ package com.produce.pickmeup.domain.portfolio.comment;
 
 import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -34,6 +35,16 @@ public class PortfolioComment {
 	private String authorEmail;
 	@Column(nullable = false)
 	private String content;
+
+	@Builder
+	public PortfolioComment(User author, String content, Portfolio portfolio) {
+		this.author = author;
+		this.authorEmail = author.getEmail();
+		this.content = content;
+		this.portfolio = portfolio;
+		this.createdDate = new Timestamp(System.currentTimeMillis());
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
+	}
 
 	public PortfolioCommentResponseDto toResponseDto() {
 		return PortfolioCommentResponseDto.builder()
