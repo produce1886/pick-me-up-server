@@ -65,4 +65,9 @@ public class PortfolioComment {
 			.modifiedDate(modifiedDate)
 			.build();
 	}
+	
+	public void updateContent(PortfolioCommentRequestDto portfolioCommentUpdateDto) {
+		this.content = portfolioCommentUpdateDto.getContent();
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
+	}
 }
