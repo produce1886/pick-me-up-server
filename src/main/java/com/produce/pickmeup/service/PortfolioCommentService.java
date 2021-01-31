@@ -39,4 +39,19 @@ public class PortfolioCommentService {
 	public boolean isLinked(PortfolioComment portfolioComment, Long portfolioId) {
 		return portfolioComment.getPortfolio().getId() == portfolioId;
 	}
+
+	public PortfolioCommentDetailResponseDto getCommentDetail(PortfolioComment comment) {
+		return comment.toDetailResponseDto();
+	}
+
+	@Transactional
+	public void deleteCommentDetail(Long portfolioCommentId) {
+		portfolioCommentRepository.deleteById(portfolioCommentId);
+	}
+
+	@Transactional
+	public void updatePortfolioComment(PortfolioComment portfolioComment,
+		PortfolioCommentRequestDto portfolioCommentRequestDto) {
+		portfolioComment.updateContent(portfolioCommentRequestDto);
+	}
 }
