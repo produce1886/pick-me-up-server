@@ -74,5 +74,6 @@ public class ProjectComment {
 
 	public void updateContent(ProjectCommentRequestDto projectCommentUpdateDto) {
 		this.content = projectCommentUpdateDto.getContent();
+		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
 }
