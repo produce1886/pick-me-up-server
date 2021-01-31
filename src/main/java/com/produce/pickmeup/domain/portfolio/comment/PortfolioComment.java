@@ -55,4 +55,14 @@ public class PortfolioComment {
 			.user(author.toResponseDto())
 			.build();
 	}
+
+	public PortfolioCommentDetailResponseDto toDetailResponseDto() {
+		return PortfolioCommentDetailResponseDto.builder()
+			.id(id)
+			.authorEmail(authorEmail)
+			.content(content)
+			.createdDate(createdDate)
+			.modifiedDate(modifiedDate)
+			.build();
+	}
 }
