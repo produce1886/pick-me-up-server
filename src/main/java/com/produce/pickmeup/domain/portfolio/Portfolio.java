@@ -109,6 +109,10 @@ public class Portfolio {
 		this.viewNum++;
 	}
 
+	public void upCommentsNum() {
+		this.commentsNum++;
+	}
+
 	public void updateExceptTags(PortfolioRequestDto portfolioRequestDto) {
 		this.title = portfolioRequestDto.getTitle();
 		this.content = portfolioRequestDto.getContent();
