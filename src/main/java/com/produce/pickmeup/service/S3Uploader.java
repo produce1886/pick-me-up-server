@@ -27,6 +27,7 @@ public class S3Uploader {
 
 	public File convert(MultipartFile file) {
 		File convertFile = new File(TEMP_FILE_PATH + file.getOriginalFilename());
+		System.out.println(convertFile.getAbsolutePath());
 		try {
 			if (convertFile.createNewFile()) {
 				try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -36,6 +37,7 @@ public class S3Uploader {
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return null;
 	}
