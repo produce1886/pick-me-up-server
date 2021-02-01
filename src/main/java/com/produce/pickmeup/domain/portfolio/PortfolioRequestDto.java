@@ -16,5 +16,5 @@ public class PortfolioRequestDto {
 	private final String category;
 	private final String recruitmentField;
 	private final List<String> portfolioTags;
-	private final String image;
+	private final List<String> images;
 }

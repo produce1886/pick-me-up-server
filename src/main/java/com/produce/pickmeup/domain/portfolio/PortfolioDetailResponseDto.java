@@ -20,7 +20,7 @@ public class PortfolioDetailResponseDto {
 	private final String category;
 	private final String recruitmentField;
 	private final List<TagDto> portfolioTags;
-	private final String image;
+	private final List<String> images;
 	private final Timestamp createdDate;
 	private final Timestamp modifiedDate;
 	private final LoginResponseDto user;
