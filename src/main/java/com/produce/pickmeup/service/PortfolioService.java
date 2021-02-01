@@ -2,6 +2,8 @@ package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.portfolio.PortfolioDetailResponseDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioImage;
+import com.produce.pickmeup.domain.portfolio.PortfolioImageRepository;
 import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PortfolioService {
-
+	private final PortfolioImageRepository imageRepository;
 	private final TagRepository tagRepository;
 	private final PortfolioRepository portfolioRepository;
 	private final PortfolioHasTagRepository relationRepository;
@@ -51,6 +53,7 @@ public class PortfolioService {
 				.recruitmentField(portfolioRequestDto.getRecruitmentField())
 				.build());
 		portfolioConnectTags(portfolioRequestDto.getPortfolioTags(), portfolio);
+		addPortfolioImage(portfolioRequestDto.getImages(), portfolio);
 		return String.valueOf(portfolio.getId());
 	}
 
@@ -74,6 +77,14 @@ public class PortfolioService {
 	}
 
 	@Transactional
+	public void addPortfolioImage(List<String> imageUrls, Portfolio portfolio) {
+		for (String imageUrl : imageUrls) {
+			imageRepository.save(PortfolioImage.builder().
+				imageUrl(imageUrl).portfolio(portfolio).build());
+		}
+	}
+
+	@Transactional
 	public Optional<Portfolio> getPortfolio(Long portfolioId) {
 		return portfolioRepository.findById(portfolioId);
 	}
@@ -84,13 +95,15 @@ public class PortfolioService {
 		List<PortfolioHasTag> relations = portfolio.getPortfolioTags();
 		List<PortfolioCommentResponseDto> comments = portfolio.getPortfolioComments()
 			.stream().map(PortfolioComment::toResponseDto).collect(Collectors.toList());
+		List<String> images = portfolio.getPortfolioImages()
+			.stream().map(PortfolioImage::getImage).collect(Collectors.toList());
 		if (relations.isEmpty()) {
-			return portfolio.toDetailResponseDto(Collections.emptyList(), comments);
+			return portfolio.toDetailResponseDto(Collections.emptyList(), comments, images);
 		}
 		List<TagDto> PortfolioTags = relations.stream()
 			.map(PortfolioHasTag::getPortfolioTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
-		return portfolio.toDetailResponseDto(PortfolioTags, comments);
+		return portfolio.toDetailResponseDto(PortfolioTags, comments, images);
 	}
 
 	public boolean checkPortfolioAuthorEmail(Portfolio portfolio, String authorEmail) {
