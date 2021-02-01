@@ -20,14 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Uploader {
 	private final static List<String> IMAGE_EXTENSIONS = Arrays
 		.asList(".jpg", ".jpeg", ".gif", ".png", ".img", ".tiff", ".heif");
-	private final static String TEMP_FILE_PATH = "src/main/resources/";
+	private final static String TEMP_FILE_PATH = "/pick-me-up-server/src/main/resources/";
 	private final AmazonS3Client amazonS3Client;
 	@Value("${cloud.aws.s3.bucket}")
 	public String bucket;
 
 	public File convert(MultipartFile file) {
 		File convertFile = new File(TEMP_FILE_PATH + file.getOriginalFilename());
-		System.out.println(convertFile.getAbsolutePath());
 		try {
 			if (convertFile.createNewFile()) {
 				try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -37,7 +36,6 @@ public class S3Uploader {
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			e.printStackTrace();
 		}
 		return null;
 	}
