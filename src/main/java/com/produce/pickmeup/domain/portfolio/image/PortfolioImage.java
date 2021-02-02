@@ -1,5 +1,6 @@
-package com.produce.pickmeup.domain.portfolio;
+package com.produce.pickmeup.domain.portfolio.image;
 
+import com.produce.pickmeup.domain.portfolio.Portfolio;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,8 +28,17 @@ public class PortfolioImage {
 	private String image;
 
 	@Builder
-	public PortfolioImage(String imageUrl, Portfolio portfolio) {
-		this.image = imageUrl;
+	public PortfolioImage(String image, Portfolio portfolio) {
+		this.image = image;
 		this.portfolio = portfolio;
+	}
+
+	public PortfolioImageDto toDto() {
+		return PortfolioImageDto.builder()
+			.id(id).image(image).build();
+	}
+
+	public void updateImage(String imageUrl) {
+		this.image = imageUrl;
 	}
 }
