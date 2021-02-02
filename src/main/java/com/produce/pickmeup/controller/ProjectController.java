@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
 public class ProjectController {
 	private final ProjectService projectService;
@@ -122,6 +124,7 @@ public class ProjectController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@GetMapping("/projects/list")
 	public ResponseEntity<Object> getProjectsList(final Pageable pageable,
 		@RequestParam(required = false) String category,
