@@ -2,13 +2,14 @@ package com.produce.pickmeup.domain.portfolio;
 
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
+import com.produce.pickmeup.domain.portfolio.image.PortfolioImage;
+import com.produce.pickmeup.domain.portfolio.image.PortfolioImageDto;
 import com.produce.pickmeup.domain.tag.PortfolioHasTag;
 import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -96,8 +97,8 @@ public class Portfolio {
 	}
 
 	public PortfolioDetailResponseDto toDetailResponseDto
-		(List<TagDto> portfolioTags, List<PortfolioCommentResponseDto> comments, List<String> imageStringList) {
-
+		(List<TagDto> portfolioTags, List<PortfolioCommentResponseDto> comments,
+			List<PortfolioImageDto> imageStringList) {
 		return PortfolioDetailResponseDto.builder()
 			.images(imageStringList)
 			.user(author.toResponseDto())

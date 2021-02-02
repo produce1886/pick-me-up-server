@@ -2,6 +2,7 @@ package com.produce.pickmeup.domain.portfolio;
 
 import com.produce.pickmeup.domain.login.LoginResponseDto;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
+import com.produce.pickmeup.domain.portfolio.image.PortfolioImageDto;
 import com.produce.pickmeup.domain.tag.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class PortfolioDetailResponseDto {
 	private final String category;
 	private final String recruitmentField;
 	private final List<TagDto> portfolioTags;
-	private final List<String> images;
+	private final List<PortfolioImageDto> images;
 	private final Timestamp createdDate;
 	private final Timestamp modifiedDate;
 	private final LoginResponseDto user;
