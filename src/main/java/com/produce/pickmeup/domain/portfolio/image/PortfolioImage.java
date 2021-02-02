@@ -25,16 +25,20 @@ public class PortfolioImage {
 	@JoinColumn(name = "portfolio_id")
 	private Portfolio portfolio;
 	@Column
-	private String imageUrl;
+	private String image;
 
 	@Builder
-	public PortfolioImage(String imageUrl, Portfolio portfolio) {
-		this.imageUrl = imageUrl;
+	public PortfolioImage(String image, Portfolio portfolio) {
+		this.image = image;
 		this.portfolio = portfolio;
 	}
 
 	public PortfolioImageDto toDto() {
 		return PortfolioImageDto.builder()
-			.id(id).image(imageUrl).build();
+			.id(id).image(image).build();
+	}
+
+	public void updateImage(String imageUrl) {
+		this.image = imageUrl;
 	}
 }
