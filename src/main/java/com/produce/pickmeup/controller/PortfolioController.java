@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -164,5 +165,14 @@ public class PortfolioController {
 		}
 		String result = portfolioService.addPortfolioImage(convertedFile, portfolio.get());
 		return ResponseEntity.created(URI.create(result)).build();
+	}
+
+	@GetMapping("/portfolios/list")
+	public ResponseEntity<Object> getPortfoliosList(final Pageable pageable,
+		@RequestParam(required = false) String category,
+		@RequestParam(required = false) String recruitmentField,
+		@RequestParam(required = false) String keyword) {
+		return ResponseEntity.ok(
+			portfolioService.getPortfoliosList(pageable, category, recruitmentField, keyword));
 	}
 }
