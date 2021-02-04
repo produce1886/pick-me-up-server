@@ -124,13 +124,13 @@ public class PortfolioService {
 			= getPortfolioTagNames(portfolio).stream().map(TagDto::getTagName)
 			.collect(Collectors.toList());
 		List<String> newTagNames = portfolioRequestDto.getPortfolioTags();
-		List<String> disconnectTagNames = new ArrayList<>(); // 없앨 친구들 고름
+		List<String> disconnectTagNames = new ArrayList<>();
 		for (String tagName : originalTagNames) {
 			if (!newTagNames.contains(tagName)) {
 				disconnectTagNames.add(tagName);
 			}
 		}
-		newTagNames.removeIf(originalTagNames::contains); //new
+		newTagNames.removeIf(originalTagNames::contains);
 		deletePortfolioTagRelations(portfolio, disconnectTagNames);
 		portfolioConnectTags(newTagNames, portfolio);
 	}
@@ -138,7 +138,7 @@ public class PortfolioService {
 	@Transactional
 	public String addPortfolioImage(File convertedFile, Portfolio portfolio) {
 		PortfolioImage portfolioImage = imageRepository.save(PortfolioImage.builder()
-			.portfolio(portfolio).build()); //처음에 null으로 생성되나?
+			.portfolio(portfolio).build());
 		String result = s3Uploader
 			.upload(convertedFile, PORTFOLIO_IMAGE_PATH, String.valueOf(portfolioImage.getId()));
 		portfolioImage.updateImage(result);
