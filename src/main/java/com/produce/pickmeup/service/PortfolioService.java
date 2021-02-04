@@ -2,8 +2,11 @@ package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.domain.portfolio.Portfolio;
 import com.produce.pickmeup.domain.portfolio.PortfolioDetailResponseDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioListResponseDto;
 import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
 import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
+import com.produce.pickmeup.domain.portfolio.PortfolioSpecification;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
 import com.produce.pickmeup.domain.portfolio.image.PortfolioImage;
@@ -23,6 +26,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -174,5 +180,35 @@ public class PortfolioService {
 	@Transactional
 	public void deletePortfolioImageFromS3(Long portfolioImageId) {
 		s3Uploader.delete(PORTFOLIO_IMAGE_PATH, String.valueOf(portfolioImageId));
+	}
+
+	@Transactional
+	public PortfolioListResponseDto getPortfoliosList(Pageable pageable, String category,
+		String recruitmentField, String keyword) {
+		Specification<Portfolio> specification = Specification.where(null);
+		if (category != null && !category.isEmpty()) {
+			specification = specification
+				.and(Specification.where(PortfolioSpecification.byCategory(category)));
+		}
+		if (recruitmentField != null && !recruitmentField.isEmpty()) {
+			specification = specification.and(
+				Specification.where(PortfolioSpecification.byRecruitmentField(recruitmentField)));
+		}
+		if (keyword != null && !keyword.isEmpty()) {
+			specification = specification
+				.and(Specification.where(PortfolioSpecification.byKeyword(keyword)));
+		}
+		return pageToListResponseDto(portfolioRepository.findAll(specification, pageable));
+	}
+
+	private PortfolioListResponseDto pageToListResponseDto(Page<Portfolio> pages) {
+		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
+		for (Portfolio portfolio : pages) {
+			portfolioDtoList.add(portfolio.toPortfolioDto(getPortfolioTagNames(portfolio)));
+		}
+		return PortfolioListResponseDto.builder()
+			.totalNum((int) pages.getTotalElements())
+			.portfolioList(portfolioDtoList)
+			.build();
 	}
 }
