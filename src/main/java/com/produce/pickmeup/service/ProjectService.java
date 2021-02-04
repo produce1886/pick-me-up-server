@@ -162,23 +162,23 @@ public class ProjectService {
 		Specification<Project> specification = Specification.where(null);
 		if (category != null && !category.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByCategory(category)));
+				.and(Specification.where(ProjectSpecification.byCategory(category)));
 		}
 		if (recruitmentField != null && !recruitmentField.isEmpty()) {
 			specification = specification.and(
-				Specification.where(ProjectSpecification.ByRecruitmentField(recruitmentField)));
+				Specification.where(ProjectSpecification.byRecruitmentField(recruitmentField)));
 		}
 		if (region != null && !region.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByRegion(region)));
+				.and(Specification.where(ProjectSpecification.byRegion(region)));
 		}
 		if (projectSection != null && !projectSection.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByProjectSection(projectSection)));
+				.and(Specification.where(ProjectSpecification.byProjectSection(projectSection)));
 		}
 		if (keyword != null && !keyword.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByKeyword(keyword)));
+				.and(Specification.where(ProjectSpecification.byKeyword(keyword)));
 		}
 		return pageToListResponseDto(projectRepository.findAll(specification, pageable));
 	}
