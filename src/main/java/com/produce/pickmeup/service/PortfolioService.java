@@ -21,6 +21,7 @@ import com.produce.pickmeup.domain.user.User;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,7 +70,8 @@ public class PortfolioService {
 
 	@Transactional
 	public void portfolioConnectTags(List<String> portfolioTags, Portfolio savedPortfolio) {
-		for (String tagName : portfolioTags) {
+		HashSet<String> portfolioTagSet = new HashSet<>(portfolioTags);
+		for (String tagName : portfolioTagSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addPortfolioTag(tagName));
 			relationRepository.save(
