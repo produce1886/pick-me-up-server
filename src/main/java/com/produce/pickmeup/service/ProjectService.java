@@ -20,6 +20,7 @@ import com.produce.pickmeup.domain.user.User;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +62,8 @@ public class ProjectService {
 
 	@Transactional
 	public void projectConnectTags(List<String> projectTags, Project savedProject) {
-		for (String tagName : projectTags) {
+		HashSet<String> projectTagsSet = new HashSet<>(projectTags);
+		for (String tagName : projectTagsSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
 			relationRepository.save(
