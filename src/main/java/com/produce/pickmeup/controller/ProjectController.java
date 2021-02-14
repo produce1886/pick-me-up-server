@@ -69,8 +69,9 @@ public class ProjectController {
 					ErrorCase.NO_SUCH_PROJECT_ERROR));
 		}
 		if (multipartFile.isEmpty()) {
-			projectService.deleteProjectImage(project.get());
-			return ResponseEntity.noContent().build();
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.INVALID_FIELD_ERROR));
 		}
 		File convertedFile = uploaderService.convert(multipartFile);
 		if (convertedFile == null) {
@@ -85,6 +86,18 @@ public class ProjectController {
 		}
 		String result = projectService.updateProjectImage(convertedFile, project.get());
 		return ResponseEntity.created(URI.create(result)).build();
+	}
+
+	@DeleteMapping("/projects/{id}/image")
+	public ResponseEntity<Object> deleteProjectImage(@PathVariable Long id) {
+		Optional<Project> project = projectService.getProject(id);
+		if (!project.isPresent()) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_PROJECT_ERROR));
+		}
+		projectService.deleteProjectImage(project.get());
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/projects/{id}")

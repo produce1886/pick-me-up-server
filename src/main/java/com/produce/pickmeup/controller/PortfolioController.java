@@ -120,9 +120,9 @@ public class PortfolioController {
 					ErrorCase.NO_SUCH_IMAGE_ERROR));
 		}
 		if (multipartFile.isEmpty()) {
-			portfolioService.deletePortfolioImageFromDB(portfolioImage.get());
-			portfolioService.deletePortfolioImageFromS3(id);
-			return ResponseEntity.noContent().build();
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.INVALID_FIELD_ERROR));
 		}
 		File convertedFile = uploaderService.convert(multipartFile);
 		if (convertedFile == null) {
@@ -137,6 +137,19 @@ public class PortfolioController {
 		}
 		String result = portfolioService.updatePortfolioImage(convertedFile, portfolioImage.get());
 		return ResponseEntity.created(URI.create(result)).build();
+	}
+
+	@DeleteMapping("/portfolios/image/{id}")
+	public ResponseEntity<Object> deletePortfolioImage(@PathVariable Long id) {
+		Optional<PortfolioImage> portfolioImage = portfolioService.getPortfolioImage(id);
+		if (!portfolioImage.isPresent()) {
+			return ResponseEntity.badRequest()
+				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
+					ErrorCase.NO_SUCH_IMAGE_ERROR));
+		}
+		portfolioService.deletePortfolioImageFromDB(portfolioImage.get());
+		portfolioService.deletePortfolioImageFromS3(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/portfolios/{id}/image")
