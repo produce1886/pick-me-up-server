@@ -123,6 +123,9 @@ public class Portfolio {
 	public void upCommentsNum() {
 		this.commentsNum++;
 	}
+	public void downCommentsNum() {
+		this.commentsNum--;
+	}
 
 	public void updateExceptTags(PortfolioRequestDto portfolioRequestDto) {
 		this.title = portfolioRequestDto.getTitle();
