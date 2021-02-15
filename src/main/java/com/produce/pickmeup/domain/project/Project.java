@@ -106,6 +106,9 @@ public class Project {
 	public void upCommentsNum() {
 		this.commentsNum++;
 	}
+	public void downCommentsNum() {
+		this.commentsNum--;
+	}
 
 	public ProjectDto toProjectDto(List<TagDto> tagDtoList) {
 		return ProjectDto.builder()
