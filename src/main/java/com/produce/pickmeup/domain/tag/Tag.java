@@ -44,4 +44,8 @@ public class Tag {
 			.tagName(tagName)
 			.build();
 	}
+
+	public void resetScore() {
+		this.currentScore = 0;
+	}
 }
