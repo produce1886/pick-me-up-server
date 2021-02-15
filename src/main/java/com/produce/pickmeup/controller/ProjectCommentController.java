@@ -115,6 +115,7 @@ public class ProjectCommentController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
 		projectCommentService.deleteCommentDetail(commentId);
+		project.get().downCommentsNum();
 		return ResponseEntity.noContent().build();
 	}
 }
