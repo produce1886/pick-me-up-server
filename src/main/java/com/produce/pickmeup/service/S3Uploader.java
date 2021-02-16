@@ -3,6 +3,7 @@ package com.produce.pickmeup.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.produce.pickmeup.common.ErrorCase;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,10 +67,11 @@ public class S3Uploader {
 	}
 
 	private String putS3(File uploadFile, String fileName) {
-		amazonS3Client.putObject(
+		PutObjectResult result = amazonS3Client.putObject(
 			new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(
 				CannedAccessControlList.PublicRead));
-		return amazonS3Client.getUrl(bucket, fileName).toString();
+		return String.format("%s?versionId=%s", amazonS3Client.getUrl(bucket, fileName),
+			result.getVersionId());
 	}
 
 	private void deleteLocalFile(File uploadFile) {
