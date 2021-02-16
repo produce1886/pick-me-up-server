@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +50,8 @@ public class UserController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
 		}
 		if (multipartFile.isEmpty()) {
-			userService.deleteUserImage(user.get());
-			return ResponseEntity.noContent().build();
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR));
 		}
 		File convertedFile = uploaderService.convert(multipartFile);
 		if (convertedFile == null) {
@@ -65,6 +66,17 @@ public class UserController {
 		}
 		String result = userService.updateUserImage(convertedFile, user.get());
 		return ResponseEntity.created(URI.create(result)).build();
+	}
+
+	@DeleteMapping("/users/{id}/image")
+	public ResponseEntity<Object> deleteUserImage(@PathVariable Long id) {
+		Optional<User> user = userService.findById(id);
+		if (!user.isPresent()) {
+			return ResponseEntity.badRequest().body(
+				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
+		}
+		userService.deleteUserImage(user.get());
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/users/{id}")

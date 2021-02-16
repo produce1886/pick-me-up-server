@@ -1,4 +1,4 @@
-package com.produce.pickmeup.domain.portfolio;
+package com.produce.pickmeup.domain.portfolio.image;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
