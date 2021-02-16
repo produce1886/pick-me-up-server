@@ -111,6 +111,7 @@ public class PortfolioCommentController {
 				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
 		}
 		portfolioCommentService.deleteCommentDetail(commentId);
+		portfolio.get().downCommentsNum();
 		return ResponseEntity.noContent().build();
 	}
 }

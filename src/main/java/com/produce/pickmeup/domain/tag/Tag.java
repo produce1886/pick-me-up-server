@@ -30,12 +30,12 @@ public class Tag {
 	@OneToMany(mappedBy = "portfolioTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private final List<PortfolioHasTag> portfolios = new ArrayList<>();
 	@Column
-	private long score;
+	private long currentScore;
 
 	@Builder
 	public Tag(String tagName) {
 		this.tagName = tagName;
-		this.score = 0;
+		this.currentScore = 0;
 	}
 
 	public TagDto toTagDto() {

@@ -20,6 +20,7 @@ import com.produce.pickmeup.domain.user.User;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +62,8 @@ public class ProjectService {
 
 	@Transactional
 	public void projectConnectTags(List<String> projectTags, Project savedProject) {
-		for (String tagName : projectTags) {
+		HashSet<String> projectTagsSet = new HashSet<>(projectTags);
+		for (String tagName : projectTagsSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
 			relationRepository.save(
@@ -162,23 +164,23 @@ public class ProjectService {
 		Specification<Project> specification = Specification.where(null);
 		if (category != null && !category.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByCategory(category)));
+				.and(Specification.where(ProjectSpecification.byCategory(category)));
 		}
 		if (recruitmentField != null && !recruitmentField.isEmpty()) {
 			specification = specification.and(
-				Specification.where(ProjectSpecification.ByRecruitmentField(recruitmentField)));
+				Specification.where(ProjectSpecification.byRecruitmentField(recruitmentField)));
 		}
 		if (region != null && !region.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByRegion(region)));
+				.and(Specification.where(ProjectSpecification.byRegion(region)));
 		}
 		if (projectSection != null && !projectSection.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByProjectSection(projectSection)));
+				.and(Specification.where(ProjectSpecification.byProjectSection(projectSection)));
 		}
 		if (keyword != null && !keyword.isEmpty()) {
 			specification = specification
-				.and(Specification.where(ProjectSpecification.ByKeyword(keyword)));
+				.and(Specification.where(ProjectSpecification.byKeyword(keyword)));
 		}
 		return pageToListResponseDto(projectRepository.findAll(specification, pageable));
 	}
