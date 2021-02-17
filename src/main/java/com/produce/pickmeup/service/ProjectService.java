@@ -103,6 +103,7 @@ public class ProjectService {
 		if (relations.isEmpty()) {
 			return project.toDetailResponseDto(Collections.emptyList(), comments);
 		}
+		relations.forEach((tag) -> tag.getProjectTag().upCurrentScore());
 		List<TagDto> projectTags = relations.stream()
 			.map(ProjectHasTag::getProjectTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());

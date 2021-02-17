@@ -1,39 +1,29 @@
 package com.produce.pickmeup.service;
 
-import com.produce.pickmeup.domain.portfolio.Portfolio;
-import com.produce.pickmeup.domain.portfolio.PortfolioDetailResponseDto;
-import com.produce.pickmeup.domain.portfolio.PortfolioDto;
-import com.produce.pickmeup.domain.portfolio.PortfolioListResponseDto;
-import com.produce.pickmeup.domain.portfolio.PortfolioRepository;
-import com.produce.pickmeup.domain.portfolio.PortfolioRequestDto;
-import com.produce.pickmeup.domain.portfolio.PortfolioSpecification;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.produce.pickmeup.domain.portfolio.*;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
 import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentResponseDto;
 import com.produce.pickmeup.domain.portfolio.image.PortfolioImage;
 import com.produce.pickmeup.domain.portfolio.image.PortfolioImageDto;
 import com.produce.pickmeup.domain.portfolio.image.PortfolioImageRepository;
-import com.produce.pickmeup.domain.tag.PortfolioHasTag;
-import com.produce.pickmeup.domain.tag.PortfolioHasTagRepository;
-import com.produce.pickmeup.domain.tag.Tag;
-import com.produce.pickmeup.domain.tag.TagDto;
-import com.produce.pickmeup.domain.tag.TagRepository;
+import com.produce.pickmeup.domain.tag.*;
 import com.produce.pickmeup.domain.user.User;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.io.File;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class PortfolioService {
 	private final String PORTFOLIO_IMAGE_PATH = "portfolio-image";
 	private final PortfolioImageRepository imageRepository;
@@ -104,6 +94,7 @@ public class PortfolioService {
 		return portfolioRepository.findById(portfolioId);
 	}
 
+	@Transactional
 	public PortfolioDetailResponseDto getPortfolioDetail(Portfolio portfolio) {
 		portfolio.upViewNum();
 		List<PortfolioHasTag> relations = portfolio.getPortfolioTags();
@@ -114,6 +105,7 @@ public class PortfolioService {
 		if (relations.isEmpty()) {
 			return portfolio.toDetailResponseDto(Collections.emptyList(), comments, images);
 		}
+		relations.forEach((tag) -> tag.getPortfolioTag().upCurrentScore());
 		List<TagDto> PortfolioTags = relations.stream()
 			.map(PortfolioHasTag::getPortfolioTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
