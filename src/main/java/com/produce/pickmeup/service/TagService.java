@@ -7,6 +7,9 @@ import com.produce.pickmeup.domain.tag.history.TagHistory;
 import com.produce.pickmeup.domain.tag.history.TagHistoryGroupByDto;
 import com.produce.pickmeup.domain.tag.history.TagHistoryRepository;
 import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,10 +32,14 @@ public class TagService {
 	}
 
 	//@Scheduled(cron = "0/5 * * * * ?") // for testing
-	//@Scheduled(cron = "0 0 6 * * ?") // everyday at 6AM
+	@Scheduled(cron = "0 0 6 * * ?") // everyday at 6AM
 	public void removeOldHistory() {
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		System.out.println("[*] remove history START");
+		ZonedDateTime zonedDateTime = currentTime.toInstant().atZone(ZoneId.of("UTC"));
+		Timestamp standardTime = Timestamp
+			.from(zonedDateTime.plus(-1, ChronoUnit.DAYS).toInstant()); // before 1 day
+		tagHistoryRepository.deleteOldScore(standardTime);
 		System.out.println("[*] remove history END");
 	}
 
