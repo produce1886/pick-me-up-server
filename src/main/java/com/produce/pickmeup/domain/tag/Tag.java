@@ -48,4 +48,8 @@ public class Tag {
 	public void resetScore() {
 		this.currentScore = 0;
 	}
+
+	public void upCurrentScore() {
+		this.currentScore++;
+	}
 }
