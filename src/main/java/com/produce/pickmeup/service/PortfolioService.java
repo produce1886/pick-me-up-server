@@ -29,12 +29,13 @@ public class PortfolioService {
 	private final PortfolioImageRepository imageRepository;
 	private final TagRepository tagRepository;
 	private final PortfolioRepository portfolioRepository;
-	private final PortfolioHasTagRepository relationRepository;
+	private final PortfolioHasTagRepository portfolioRelationRepository;
+	private final ProjectHasTagRepository projectRelationRepository;
 	private final S3Uploader s3Uploader;
 
 	@Transactional
 	public List<TagDto> getPortfolioTagNames(Portfolio portfolio) {
-		List<PortfolioHasTag> relations = relationRepository.findByPortfolio(portfolio);
+		List<PortfolioHasTag> relations = portfolioRelationRepository.findByPortfolio(portfolio);
 		if (relations.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -64,7 +65,7 @@ public class PortfolioService {
 		for (String tagName : portfolioTagSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addPortfolioTag(tagName));
-			relationRepository.save(
+			portfolioRelationRepository.save(
 				PortfolioHasTag.builder()
 					.portfolio(savedPortfolio)
 					.tag(tag).build()
@@ -155,10 +156,15 @@ public class PortfolioService {
 
 	@Transactional
 	public void deletePortfolioTagRelations(Portfolio portfolio, List<String> disconnectTagNames) {
-		disconnectTagNames.forEach(value ->
-			tagRepository.findByTagName(value).ifPresent(tag ->
-				relationRepository.deleteByPortfolioAndPortfolioTag(portfolio, tag))
-		);
+		for (String tagName: disconnectTagNames) {
+			Optional<Tag> tag = tagRepository.findByTagName(tagName);
+			if (tag.isPresent()) {
+				portfolioRelationRepository.deleteByPortfolioAndPortfolioTag(portfolio, tag.get());
+				if (!(projectRelationRepository.existsByProjectTag(tag.get())) &&
+					!(portfolioRelationRepository.existsByPortfolioTag(tag.get())))
+					tagRepository.delete(tag.get());
+			}
+		}
 	}
 
 	@Transactional
