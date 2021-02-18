@@ -169,6 +169,10 @@ public class PortfolioService {
 
 	@Transactional
 	public void deletePortfolio(Portfolio portfolio) {
+		List<String> portfolioTagNames
+			= getPortfolioTagNames(portfolio).stream().map(TagDto::getTagName)
+			.collect(Collectors.toList());
+		deletePortfolioTagRelations(portfolio, portfolioTagNames);
 		portfolioRepository.delete(portfolio);
 	}
 

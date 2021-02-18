@@ -149,6 +149,10 @@ public class ProjectService {
 
 	@Transactional
 	public void deleteProject(Project project) {
+		List<String> projectTagNames
+			= getProjectTagNames(project).stream().map(TagDto::getTagName)
+			.collect(Collectors.toList());
+		deleteProjectTagRelations(project, projectTagNames);
 		projectRepository.delete(project);
 	}
 
