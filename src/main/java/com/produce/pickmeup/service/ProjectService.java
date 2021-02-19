@@ -54,6 +54,7 @@ public class ProjectService {
 		for (String tagName : projectTagsSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
+			tag.upFiveCurrentScore();
 			projectRelationRepository.save(
 				ProjectHasTag.builder()
 					.project(savedProject)

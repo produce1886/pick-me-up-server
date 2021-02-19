@@ -65,6 +65,7 @@ public class PortfolioService {
 		for (String tagName : portfolioTagSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addPortfolioTag(tagName));
+			tag.upFiveCurrentScore();
 			portfolioRelationRepository.save(
 				PortfolioHasTag.builder()
 					.portfolio(savedPortfolio)
