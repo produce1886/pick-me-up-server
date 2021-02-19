@@ -23,7 +23,7 @@ public class TagService {
 	private final TagHistoryRepository tagHistoryRepository;
 
 	//@Scheduled(cron = "0 0 0/1 * * ?") // save score history every 1 hour
-	@Scheduled(cron = "0 0 0/6 * * ?") // save score history every 6 hours
+	@Scheduled(cron = "0 0 0/3 * * ?") // save score history every 3 hours
 	public void updateScore() {
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		System.out.println("[*] " + currentTime + ": update score START");
