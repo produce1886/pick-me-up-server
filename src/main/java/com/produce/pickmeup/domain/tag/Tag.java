@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,11 +50,7 @@ public class Tag {
 		this.currentScore = 0;
 	}
 
-	public void upCurrentScore() {
-		this.currentScore++;
-	}
-
-	public void upFiveCurrentScore() {
-		this.currentScore += 5;
+	public void upCurrentScore(int score) {
+		this.currentScore += score;
 	}
 }
