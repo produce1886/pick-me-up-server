@@ -52,4 +52,8 @@ public class Tag {
 	public void upCurrentScore() {
 		this.currentScore++;
 	}
+
+	public void upFiveCurrentScore() {
+		this.currentScore += 5;
+	}
 }
