@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class PortfolioService {
+	private final int viewScore = 1;
+	private final int createTagScore = 5;
+
 	private final String PORTFOLIO_IMAGE_PATH = "portfolio-image";
 	private final PortfolioImageRepository imageRepository;
 	private final TagRepository tagRepository;
@@ -65,7 +68,7 @@ public class PortfolioService {
 		for (String tagName : portfolioTagSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addPortfolioTag(tagName));
-			tag.upFiveCurrentScore();
+			tag.upCurrentScore(createTagScore);
 			portfolioRelationRepository.save(
 				PortfolioHasTag.builder()
 					.portfolio(savedPortfolio)
@@ -107,7 +110,7 @@ public class PortfolioService {
 		if (relations.isEmpty()) {
 			return portfolio.toDetailResponseDto(Collections.emptyList(), comments, images);
 		}
-		relations.forEach((tag) -> tag.getPortfolioTag().upCurrentScore());
+		relations.forEach((tag) -> tag.getPortfolioTag().upCurrentScore(viewScore));
 		List<TagDto> PortfolioTags = relations.stream()
 			.map(PortfolioHasTag::getPortfolioTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
