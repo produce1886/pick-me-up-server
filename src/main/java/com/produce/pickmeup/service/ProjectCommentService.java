@@ -5,15 +5,18 @@ import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentDetailResponseDto;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRepository;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRequestDto;
+import com.produce.pickmeup.domain.tag.ProjectHasTag;
 import com.produce.pickmeup.domain.user.User;
-import java.util.Optional;
-import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class ProjectCommentService {
+	private final int COMMENT_SCORE = 2;
 	private final ProjectCommentRepository projectCommentRepository;
 
 	@Transactional
@@ -27,6 +30,8 @@ public class ProjectCommentService {
 				.build())
 			.getId();
 		project.upCommentsNum();
+		project.getProjectTags().stream().map(ProjectHasTag::getProjectTag)
+			.forEach((tag) -> tag.upCurrentScore(COMMENT_SCORE));
 		return String.valueOf(result);
 	}
 
