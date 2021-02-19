@@ -2,44 +2,34 @@ package com.produce.pickmeup.service;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.produce.pickmeup.domain.project.Project;
-import com.produce.pickmeup.domain.project.ProjectDetailResponseDto;
-import com.produce.pickmeup.domain.project.ProjectDto;
-import com.produce.pickmeup.domain.project.ProjectListResponseDto;
-import com.produce.pickmeup.domain.project.ProjectRepository;
-import com.produce.pickmeup.domain.project.ProjectRequestDto;
-import com.produce.pickmeup.domain.project.ProjectSpecification;
+import com.produce.pickmeup.domain.project.*;
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentResponseDto;
-import com.produce.pickmeup.domain.tag.ProjectHasTag;
-import com.produce.pickmeup.domain.tag.ProjectHasTagRepository;
-import com.produce.pickmeup.domain.tag.Tag;
-import com.produce.pickmeup.domain.tag.TagDto;
-import com.produce.pickmeup.domain.tag.TagRepository;
+import com.produce.pickmeup.domain.tag.*;
 import com.produce.pickmeup.domain.user.User;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.io.File;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProjectService {
+	private final int VIEW_SCORE = 1;
+	private final int CREATE_TAG_SCORE = 5;
 	private final String PROJECT_IMAGE_PATH = "project-image";
 
 	private final ProjectRepository projectRepository;
 	private final TagRepository tagRepository;
-	private final ProjectHasTagRepository relationRepository;
+	private final ProjectHasTagRepository projectRelationRepository;
+	private final PortfolioHasTagRepository portfolioRelationRepository;
 	private final S3Uploader s3Uploader;
 
 
@@ -66,7 +56,8 @@ public class ProjectService {
 		for (String tagName : projectTagsSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
-			relationRepository.save(
+			tag.upCurrentScore(CREATE_TAG_SCORE);
+			projectRelationRepository.save(
 				ProjectHasTag.builder()
 					.project(savedProject)
 					.tag(tag).build()
@@ -81,7 +72,7 @@ public class ProjectService {
 	}
 
 	public List<TagDto> getProjectTagNames(Project project) {
-		List<ProjectHasTag> relations = relationRepository.findByProject(project);
+		List<ProjectHasTag> relations = projectRelationRepository.findByProject(project);
 		if (relations.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -103,6 +94,7 @@ public class ProjectService {
 		if (relations.isEmpty()) {
 			return project.toDetailResponseDto(Collections.emptyList(), comments);
 		}
+		relations.forEach((tag) -> tag.getProjectTag().upCurrentScore(VIEW_SCORE));
 		List<TagDto> projectTags = relations.stream()
 			.map(ProjectHasTag::getProjectTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
@@ -129,10 +121,15 @@ public class ProjectService {
 
 	@Transactional
 	public void deleteProjectTagRelations(Project project, List<String> disconnectTagNames) {
-		disconnectTagNames.forEach(value ->
-			tagRepository.findByTagName(value).ifPresent(tag ->
-				relationRepository.deleteByProjectAndProjectTag(project, tag))
-		);
+		for (String tagName: disconnectTagNames) {
+			Optional<Tag> tag = tagRepository.findByTagName(tagName);
+			if (tag.isPresent()) {
+				projectRelationRepository.deleteByProjectAndProjectTag(project, tag.get());
+				if (!(projectRelationRepository.existsByProjectTag(tag.get())) &&
+					!(portfolioRelationRepository.existsByPortfolioTag(tag.get())))
+					tagRepository.delete(tag.get());
+			}
+		}
 	}
 
 	@Transactional
@@ -155,6 +152,10 @@ public class ProjectService {
 
 	@Transactional
 	public void deleteProject(Project project) {
+		List<String> projectTagNames
+			= getProjectTagNames(project).stream().map(TagDto::getTagName)
+			.collect(Collectors.toList());
+		deleteProjectTagRelations(project, projectTagNames);
 		projectRepository.delete(project);
 	}
 

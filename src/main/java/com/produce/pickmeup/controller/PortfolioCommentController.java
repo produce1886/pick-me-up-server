@@ -27,7 +27,7 @@ public class PortfolioCommentController {
 
 	@PostMapping("/portfolios/{id}/comments")
 	public ResponseEntity<Object> addPortfolioComment(@PathVariable Long id,
-													@RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
+		@RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
 		Optional<User> author = userService.findByEmail(portfolioCommentRequestDto.getAuthorEmail());
 		if (!author.isPresent()) {
 			return ResponseEntity.badRequest().body(
@@ -45,7 +45,7 @@ public class PortfolioCommentController {
 
 	@GetMapping("/portfolios/{id}/comments/{commentId}")
 	public ResponseEntity<Object> getPortfolioComment(@PathVariable Long id,
-													@PathVariable Long commentId) {
+		@PathVariable Long commentId) {
 		Optional<Portfolio> portfolio = portfolioService.getPortfolio(id);
 		if (!portfolio.isPresent()) {
 			return ResponseEntity.badRequest().body(
@@ -66,8 +66,8 @@ public class PortfolioCommentController {
 
 	@PutMapping("/portfolios/{id}/comments/{commentId}")
 	public ResponseEntity<Object> updatePortfolioComment(@PathVariable Long id,
-													   @PathVariable Long commentId,
-													   @RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
+		@PathVariable Long commentId,
+		@RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
 		Optional<Portfolio> portfolio = portfolioService.getPortfolio(id);
 		if (!portfolio.isPresent()) {
 			return ResponseEntity.badRequest().body(
@@ -94,7 +94,7 @@ public class PortfolioCommentController {
 
 	@DeleteMapping("/portfolios/{id}/comments/{commentId}")
 	public ResponseEntity<Object> deletePortfolioComment(@PathVariable Long id,
-													   @PathVariable Long commentId) {
+		@PathVariable Long commentId) {
 		Optional<Portfolio> portfolio = portfolioService.getPortfolio(id);
 		if (!portfolio.isPresent()) {
 			return ResponseEntity.badRequest().body(
