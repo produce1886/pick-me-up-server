@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProjectService {
-	private final int viewScore = 1;
-	private final int createTagScore = 5;
+	private final int VIEW_SCORE = 1;
+	private final int CREATE_TAG_SCORE = 5;
 	private final String PROJECT_IMAGE_PATH = "project-image";
 
 	private final ProjectRepository projectRepository;
@@ -56,7 +56,7 @@ public class ProjectService {
 		for (String tagName : projectTagsSet) {
 			Tag tag = tagRepository.findByTagName(tagName)
 				.orElseGet(() -> addProjectTag(tagName));
-			tag.upCurrentScore(createTagScore);
+			tag.upCurrentScore(CREATE_TAG_SCORE);
 			projectRelationRepository.save(
 				ProjectHasTag.builder()
 					.project(savedProject)
@@ -94,7 +94,7 @@ public class ProjectService {
 		if (relations.isEmpty()) {
 			return project.toDetailResponseDto(Collections.emptyList(), comments);
 		}
-		relations.forEach((tag) -> tag.getProjectTag().upCurrentScore(viewScore));
+		relations.forEach((tag) -> tag.getProjectTag().upCurrentScore(VIEW_SCORE));
 		List<TagDto> projectTags = relations.stream()
 			.map(ProjectHasTag::getProjectTag)
 			.map(Tag::toTagDto).collect(Collectors.toList());
