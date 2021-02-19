@@ -6,7 +6,6 @@ import com.produce.pickmeup.domain.project.comment.ProjectCommentDetailResponseD
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRepository;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRequestDto;
 import com.produce.pickmeup.domain.tag.ProjectHasTag;
-import com.produce.pickmeup.domain.tag.Tag;
 import com.produce.pickmeup.domain.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProjectCommentService {
-	private final int commentScore = 2;
+	private final int COMMENT_SCORE = 2;
 	private final ProjectCommentRepository projectCommentRepository;
 
 	@Transactional
@@ -32,7 +31,7 @@ public class ProjectCommentService {
 			.getId();
 		project.upCommentsNum();
 		project.getProjectTags().stream().map(ProjectHasTag::getProjectTag)
-			.forEach((tag) -> tag.upCurrentScore(commentScore));
+			.forEach((tag) -> tag.upCurrentScore(COMMENT_SCORE));
 		return String.valueOf(result);
 	}
 

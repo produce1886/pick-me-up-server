@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class PortfolioCommentService {
-	private final int commentScore = 2;
+	private final int COMMENT_SCORE = 2;
 	private final PortfolioCommentRepository portfolioCommentRepository;
 
 	@Transactional
@@ -31,7 +31,7 @@ public class PortfolioCommentService {
 			.getId();
 		portfolio.upCommentsNum();
 		portfolio.getPortfolioTags().stream().map(PortfolioHasTag::getPortfolioTag)
-			.forEach((tag) -> tag.upCurrentScore(commentScore));
+			.forEach((tag) -> tag.upCurrentScore(COMMENT_SCORE));
 		return String.valueOf(result);
 	}
 
