@@ -9,7 +9,6 @@ import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -129,6 +128,7 @@ public class Portfolio {
 	public void upCommentsNum() {
 		this.commentsNum++;
 	}
+
 	public void downCommentsNum() {
 		this.commentsNum--;
 	}
