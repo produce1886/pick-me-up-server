@@ -9,6 +9,7 @@ import com.produce.pickmeup.domain.tag.TagDto;
 import com.produce.pickmeup.domain.user.User;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -81,11 +82,16 @@ public class Portfolio {
 	}
 
 	public PortfolioDto toPortfolioDto(List<TagDto> TagDtoList) {
+		String firstImageString = "";
+		if (portfolioImages.size() > 0) {
+			firstImageString = portfolioImages.get(0).getImage();
+		}
 		return PortfolioDto.builder()
 			.id(id)
 			.user(author.toResponseDto())
 			.title(title)
 			.content(content)
+			.firstImage(firstImageString)
 			.category(category)
 			.recruitmentField(recruitmentField)
 			.viewNum(viewNum)
