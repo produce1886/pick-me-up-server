@@ -81,11 +81,16 @@ public class Portfolio {
 	}
 
 	public PortfolioDto toPortfolioDto(List<TagDto> TagDtoList) {
+		String firstImageString = "";
+		if (portfolioImages.size() > 0) {
+			firstImageString = portfolioImages.get(0).getImage();
+		}
 		return PortfolioDto.builder()
 			.id(id)
 			.user(author.toResponseDto())
 			.title(title)
 			.content(content)
+			.firstImage(firstImageString)
 			.category(category)
 			.recruitmentField(recruitmentField)
 			.viewNum(viewNum)
@@ -123,6 +128,7 @@ public class Portfolio {
 	public void upCommentsNum() {
 		this.commentsNum++;
 	}
+
 	public void downCommentsNum() {
 		this.commentsNum--;
 	}
