@@ -14,13 +14,14 @@ import lombok.Getter;
 public class PortfolioDto {
 	private final long id;
 	private final String title;
-	private final Timestamp createdDate;
-	private final Timestamp modifiedDate;
-	private final LoginResponseDto user;
 	private final String content;
-	private final int commentsNum;
-	private final long viewNum;
+	private final String firstImage;
 	private final String category;
 	private final String recruitmentField;
 	private final List<TagDto> portfolioTags;
+	private final Timestamp createdDate;
+	private final Timestamp modifiedDate;
+	private final LoginResponseDto user;
+	private final long viewNum;
+	private final int commentsNum;
 }
