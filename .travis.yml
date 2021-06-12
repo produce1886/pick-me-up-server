@@ -15,8 +15,8 @@ before_install:
   -in src/main/resources/application.tar.enc -out src/main/resources/application.tar -d
 - openssl aes-256-cbc -K $encrypted_cbbf36167afb_key -iv $encrypted_cbbf36167afb_iv
   -in src/main/resources/application-aws.tar.enc -out src/main/resources/application-aws.tar -d
-- tar vcf src/main/resources/application.tar -C src/main/resources/
-- tar vcf src/main/resources/application-aws.tar -C src/main/resources/
+- tar vxf src/main/resources/application.tar -C src/main/resources/
+- tar vxf src/main/resources/application-aws.tar -C src/main/resources/
 
 before_deploy:
 - zip -r pick-me-up-server *
