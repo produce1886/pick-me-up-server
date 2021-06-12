@@ -10,13 +10,46 @@ cache:
   - "$HOME/.gradle"
 script: "./gradlew clean build -x test"
 
+before_deploy:
+- zip -r pick-me-up-server *
+- mkdir -p deploy
+- mv pick-me-up-server.zip deploy/pick-me-up-server.zip
+
 before_install:
-  - openssl aes-256-cbc -K $encrypted_5c967de37745_key -iv $encrypted_5c967de37745_iv
-    -in src/main/resources/application.tar.enc -out application.tar -d
-  - openssl aes-256-cbc -K $encrypted_cbbf36167afb_key -iv $encrypted_cbbf36167afb_iv
-    -in src/main/resources/application-aws.tar.enc -out application-aws.tar -d
-  - tar vcf src/main/resources/application.tar -C src/main/resources
-  - tar vcf src/main/resources/application-aws.tar -C src/main/resources
+- openssl aes-256-cbc -K $encrypted_5c967de37745_key -iv $encrypted_5c967de37745_iv
+  -in src/main/resources/application.tar.enc -out application.tar -d
+- openssl aes-256-cbc -K $encrypted_cbbf36167afb_key -iv $encrypted_cbbf36167afb_iv
+  -in src/main/resources/application-aws.tar.enc -out application-aws.tar -d
+- tar vcf src/main/resources/application.tar -C src/main/resources
+- tar vcf src/main/resources/application-aws.tar -C src/main/resources
+
+deploy:
+- provider: s3
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: pick-me-up-storage
+  region: ap-northeast-2
+  cleanup: false
+  acl: public_read
+  wait-until-deployed: true
+  local_dir: deploy
+  on:
+    repo: produce1886/pick-me-up-server
+    branch: master
+
+- provider: codedeploy
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: pick-me-up-storage
+  key: pick-me-up-server.zip
+  bundle_type: zip
+  application: pick-me-up-server
+  deployment_group: pick-me-up-server-deploy
+  region: ap-northeast-2
+  wait-until-deployed: true
+  on:
+    repo: produce1886/pick-me-up-server
+    branch: master
 
 notifications:
   email:
