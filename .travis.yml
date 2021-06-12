@@ -22,6 +22,7 @@ before_deploy:
 - zip -r pick-me-up-server *
 - mkdir -p deploy
 - mv pick-me-up-server.zip deploy/pick-me-up-server.zip
+
 deploy:
 - provider: s3
   access_key_id: "$AWS_ACCESS_KEY"
@@ -34,7 +35,7 @@ deploy:
   local_dir: deploy
   on:
     repo: produce1886/pick-me-up-server
-    branch: master
+    branch: main
 - provider: codedeploy
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
@@ -47,7 +48,8 @@ deploy:
   wait-until-deployed: true
   on:
     repo: produce1886/pick-me-up-server
-    branch: master
+    branch: main
+
 notifications:
   email:
     recipients:
