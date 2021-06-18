@@ -1,7 +1,11 @@
 package com.produce.pickmeup.service;
 
 import com.produce.pickmeup.domain.portfolio.Portfolio;
-import com.produce.pickmeup.domain.portfolio.comment.*;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioComment;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentDetailResponseDto;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentRepository;
+import com.produce.pickmeup.domain.portfolio.comment.PortfolioCommentRequestDto;
+import com.produce.pickmeup.domain.tag.PortfolioHasTag;
 import com.produce.pickmeup.domain.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class PortfolioCommentService {
+	private final int COMMENT_SCORE = 2;
 	private final PortfolioCommentRepository portfolioCommentRepository;
 
 	@Transactional
@@ -25,6 +30,8 @@ public class PortfolioCommentService {
 				.build())
 			.getId();
 		portfolio.upCommentsNum();
+		portfolio.getPortfolioTags().stream().map(PortfolioHasTag::getPortfolioTag)
+			.forEach((tag) -> tag.upCurrentScore(COMMENT_SCORE));
 		return String.valueOf(result);
 	}
 
