@@ -1,4 +1,4 @@
-package com.produce.pickmeup.controller;
+package com.produce.pickmeup.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
