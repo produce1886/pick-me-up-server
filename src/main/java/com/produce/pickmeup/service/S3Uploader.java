@@ -3,7 +3,7 @@ package com.produce.pickmeup.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.produce.pickmeup.common.ErrorCase;
+import com.produce.pickmeup.error.ErrorCase;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
