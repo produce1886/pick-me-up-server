@@ -140,4 +140,8 @@ public class Portfolio {
 		this.recruitmentField = portfolioRequestDto.getRecruitmentField();
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
+
+	public boolean authorCheck(String authorEmail) {
+		return this.authorEmail.equals(authorEmail);
+	}
 }

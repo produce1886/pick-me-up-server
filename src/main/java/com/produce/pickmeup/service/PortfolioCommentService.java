@@ -39,14 +39,6 @@ public class PortfolioCommentService {
 		return portfolioCommentRepository.findById(portfolioCommentId);
 	}
 
-	public boolean checkPortfolioCommentAuthorEmail(PortfolioComment comment, String authorEmail) {
-		return comment.getAuthorEmail().equals(authorEmail);
-	}
-
-	public boolean isLinked(PortfolioComment portfolioComment, Long portfolioId) {
-		return portfolioComment.getPortfolio().getId() == portfolioId;
-	}
-
 	public PortfolioCommentDetailResponseDto getCommentDetail(PortfolioComment comment) {
 		return comment.toDetailResponseDto();
 	}

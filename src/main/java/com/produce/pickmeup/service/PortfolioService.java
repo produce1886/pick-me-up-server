@@ -117,10 +117,6 @@ public class PortfolioService {
 		return portfolio.toDetailResponseDto(PortfolioTags, comments, images);
 	}
 
-	public boolean checkPortfolioAuthorEmail(Portfolio portfolio, String authorEmail) {
-		return portfolio.getAuthorEmail().equals(authorEmail);
-	}
-
 	@Transactional
 	public void updatePortfolio(Portfolio portfolio, PortfolioRequestDto portfolioRequestDto) {
 		portfolio.updateExceptTags(portfolioRequestDto);
