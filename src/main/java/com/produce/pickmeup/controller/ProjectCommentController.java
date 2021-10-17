@@ -1,18 +1,18 @@
 package com.produce.pickmeup.controller;
 
-import com.produce.pickmeup.common.ErrorCase;
-import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.comment.ProjectComment;
 import com.produce.pickmeup.domain.project.comment.ProjectCommentRequestDto;
 import com.produce.pickmeup.domain.user.User;
+import com.produce.pickmeup.error.exception.InvalidAccessException;
+import com.produce.pickmeup.error.exception.NoCommentException;
+import com.produce.pickmeup.error.exception.NoProjectException;
+import com.produce.pickmeup.error.exception.NoUserException;
 import com.produce.pickmeup.service.ProjectCommentService;
 import com.produce.pickmeup.service.ProjectService;
 import com.produce.pickmeup.service.UserService;
 import java.net.URI;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,97 +25,68 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @AllArgsConstructor
 public class ProjectCommentController {
-	private final ProjectService projectService;
-	private final ProjectCommentService projectCommentService;
-	private final UserService userService;
+  private final ProjectService projectService;
+  private final ProjectCommentService projectCommentService;
+  private final UserService userService;
 
-	@PostMapping("/projects/{id}/comments")
-	public ResponseEntity<Object> addProjectComment(@PathVariable Long id,
-		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
-		Optional<User> author = userService.findByEmail(projectCommentRequestDto.getAuthorEmail());
-		if (!author.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR));
-		}
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		String result = projectCommentService
-			.addProjectComment(author.get(), project.get(), projectCommentRequestDto);
-		return ResponseEntity.created(URI.create("/projects/" + id + "/comments/" + result)).build();
-	}
+  @PostMapping("/projects/{id}/comments")
+  public ResponseEntity<Object> addProjectComment(@PathVariable Long id,
+      @RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
 
-	@GetMapping("/projects/{id}/comments/{commentId}")
-	public ResponseEntity<Object> getProjectComment(@PathVariable Long id,
-		@PathVariable Long commentId) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		Optional<ProjectComment> projectComment = projectCommentService
-			.getProjectComment(commentId);
-		if (!projectComment.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
-		}
-		if (!projectCommentService.isLinked(projectComment.get(), id)) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
-		}
-		return ResponseEntity.ok(projectCommentService.getCommentDetail(projectComment.get()));
-	}
+    User author = userService.findByEmail(projectCommentRequestDto.getAuthorEmail())
+        .orElseThrow(NoUserException::new);
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
 
-	@PutMapping("/projects/{id}/comments/{commentId}")
-	public ResponseEntity<Object> updateProjectComment(@PathVariable Long id,
-		@PathVariable Long commentId,
-		@RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		Optional<ProjectComment> projectComment = projectCommentService
-			.getProjectComment(commentId);
-		if (!projectComment.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
-		}
-		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
-		}
-		if (!projectCommentService.checkProjectCommentAuthorEmail(projectComment.get(),
-			projectCommentRequestDto.getAuthorEmail())) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
-		}
-		projectCommentService.updateProjectComment(projectComment.get(), projectCommentRequestDto);
-		return ResponseEntity.ok().build();
-	}
+    String result = projectCommentService.addProjectComment(author, project, projectCommentRequestDto);
+    return ResponseEntity.created(URI.create("/projects/" + id + "/comments/" + result)).build();
+  }
 
-	@DeleteMapping("/projects/{id}/comments/{commentId}")
-	public ResponseEntity<Object> deleteProjectComment(@PathVariable Long id,
-		@PathVariable Long commentId) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		Optional<ProjectComment> projectComment = projectCommentService
-			.getProjectComment(commentId);
-		if (!projectComment.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_COMMENT_ERROR));
-		}
-		if (!projectCommentService.isLinked(projectComment.get(), project.get().getId())) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.BAD_REQUEST_ERROR));
-		}
-		projectCommentService.deleteCommentDetail(commentId);
-		project.get().downCommentsNum();
-		return ResponseEntity.noContent().build();
-	}
+  @GetMapping("/projects/{id}/comments/{commentId}")
+  public ResponseEntity<Object> getProjectComment(@PathVariable Long id, @PathVariable Long commentId) {
+
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+    ProjectComment comment = projectCommentService.getProjectComment(commentId)
+        .orElseThrow(NoCommentException::new);
+    if (!comment.included(project.getId())) {
+      throw new InvalidAccessException();
+    }
+
+    return ResponseEntity.ok(projectCommentService.getCommentDetail(comment));
+  }
+
+  @PutMapping("/projects/{id}/comments/{commentId}")
+  public ResponseEntity<Object> updateProjectComment(
+      @PathVariable Long id, @PathVariable Long commentId,
+      @RequestBody ProjectCommentRequestDto projectCommentRequestDto) {
+
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+    ProjectComment comment = projectCommentService.getProjectComment(commentId)
+        .orElseThrow(NoCommentException::new);
+    if (!comment.included(project.getId()) |
+        !comment.authorCheck(projectCommentRequestDto.getAuthorEmail())) {
+      throw new InvalidAccessException();
+    }
+
+    projectCommentService.updateProjectComment(comment, projectCommentRequestDto);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/projects/{id}/comments/{commentId}")
+  public ResponseEntity<Object> deleteProjectComment(@PathVariable Long id, @PathVariable Long commentId) {
+
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+    ProjectComment comment = projectCommentService.getProjectComment(commentId)
+        .orElseThrow(NoCommentException::new);
+    if (!comment.included(project.getId())) {
+      throw new InvalidAccessException();
+    }
+
+    projectCommentService.deleteCommentDetail(commentId);
+    project.downCommentsNum();
+    return ResponseEntity.noContent().build();
+  }
 }

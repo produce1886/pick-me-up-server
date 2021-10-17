@@ -70,4 +70,12 @@ public class PortfolioComment {
 		this.content = portfolioCommentUpdateDto.getContent();
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
+
+	public boolean included(Long portfolioId) {
+		return this.portfolio.getId() == portfolioId;
+	}
+
+	public boolean authorCheck(String authorEmail) {
+		return this.authorEmail.equals(authorEmail);
+	}
 }

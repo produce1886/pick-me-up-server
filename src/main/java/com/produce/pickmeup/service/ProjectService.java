@@ -115,10 +115,6 @@ public class ProjectService {
 		project.updateImage("");
 	}
 
-	public boolean checkProjectAuthorEmail(Project project, String authorEmail) {
-		return project.getAuthorEmail().equals(authorEmail);
-	}
-
 	@Transactional
 	public void deleteProjectTagRelations(Project project, List<String> disconnectTagNames) {
 		for (String tagName: disconnectTagNames) {

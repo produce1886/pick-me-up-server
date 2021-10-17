@@ -148,4 +148,9 @@ public class Project {
 			.comments(commentDtoList)
 			.build();
 	}
+
+	public boolean authorCheck(String authorEmail) {
+		return this.authorEmail.equals(authorEmail);
+	}
+
 }

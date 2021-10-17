@@ -76,4 +76,12 @@ public class ProjectComment {
 		this.content = projectCommentUpdateDto.getContent();
 		this.modifiedDate = new Timestamp(System.currentTimeMillis());
 	}
+
+	public boolean included(Long projectId) {
+		return this.project.getId() == projectId;
+	}
+
+	public boolean authorCheck(String authorEmail) {
+		return this.authorEmail.equals(authorEmail);
+	}
 }
