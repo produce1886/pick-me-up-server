@@ -1,19 +1,22 @@
 package com.produce.pickmeup.controller;
 
-import com.produce.pickmeup.common.ErrorCase;
-import com.produce.pickmeup.domain.ErrorMessage;
 import com.produce.pickmeup.domain.project.Project;
 import com.produce.pickmeup.domain.project.ProjectRequestDto;
 import com.produce.pickmeup.domain.user.User;
+import com.produce.pickmeup.error.exception.EmptyFileException;
+import com.produce.pickmeup.error.exception.FileConvertException;
+import com.produce.pickmeup.error.exception.InvalidAccessException;
+import com.produce.pickmeup.error.exception.InvalidFieldException;
+import com.produce.pickmeup.error.exception.InvalidFileException;
+import com.produce.pickmeup.error.exception.NoProjectException;
+import com.produce.pickmeup.error.exception.NoUserException;
 import com.produce.pickmeup.service.ProjectService;
 import com.produce.pickmeup.service.S3Uploader;
 import com.produce.pickmeup.service.UserService;
 import java.io.File;
 import java.net.URI;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,132 +32,107 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @AllArgsConstructor
 public class ProjectController {
-	private final ProjectService projectService;
-	private final UserService userService;
-	private final S3Uploader uploaderService;
+  private final ProjectService projectService;
+  private final UserService userService;
+  private final S3Uploader uploaderService;
 
-	@PostMapping("/projects")
-	public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
-		if (!isRequestBodyValid(projectRequestDto)) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
-			);
-		}
-		Optional<User> author = userService.findByEmail(projectRequestDto.getAuthorEmail());
-		if (!author.isPresent()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_USER_ERROR)
-			);
-		}
-		String result = projectService.addProject(projectRequestDto, author.get());
-		return ResponseEntity.created(URI.create("/projects/" + result)).build();
-	}
+  @PostMapping("/projects")
+  public ResponseEntity<Object> addProject(@RequestBody ProjectRequestDto projectRequestDto) {
 
-	@GetMapping("/projects/{id}")
-	public ResponseEntity<Object> getProjectDetail(@PathVariable Long id) {
-		Optional<Project> project = projectService.getProject(id);
-		return project.<ResponseEntity<Object>>map(
-			value -> ResponseEntity.ok(projectService.getProjectDetail(value)))
-			.orElseGet(() -> ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.NO_SUCH_PROJECT_ERROR)));
-	}
+    if (!isRequestBodyValid(projectRequestDto)) {
+      throw new InvalidFieldException();
+    }
+    User author = userService.findByEmail(projectRequestDto.getAuthorEmail())
+        .orElseThrow(NoUserException::new);
 
-	@PatchMapping("/projects/{id}/image")
-	public ResponseEntity<Object> updateProjectImage(
-		@RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		if (multipartFile.isEmpty()) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.INVALID_FIELD_ERROR));
-		}
-		File convertedFile = uploaderService.convert(multipartFile);
-		if (convertedFile == null) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-					ErrorCase.FAIL_FILE_CONVERT_ERROR));
-		}
-		if (!uploaderService.isValidExtension(convertedFile)) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.INVALID_FILE_TYPE_ERROR));
-		}
-		String result = projectService.updateProjectImage(convertedFile, project.get());
-		return ResponseEntity.created(URI.create(result)).build();
-	}
+    String result = projectService.addProject(projectRequestDto, author);
+    return ResponseEntity.created(URI.create("/projects/" + result)).build();
+  }
 
-	@DeleteMapping("/projects/{id}/image")
-	public ResponseEntity<Object> deleteProjectImage(@PathVariable Long id) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		projectService.deleteProjectImage(project.get());
-		return ResponseEntity.noContent().build();
-	}
+  @GetMapping("/projects/{id}")
+  public ResponseEntity<Object> getProjectDetail(@PathVariable Long id) {
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
 
-	@PutMapping("/projects/{id}")
-	public ResponseEntity<Object> updateProject(@PathVariable Long id,
-		@RequestBody ProjectRequestDto projectRequestDto) {
-		if (!isRequestBodyValid(projectRequestDto)) {
-			return ResponseEntity.badRequest().body(
-				new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ErrorCase.INVALID_FIELD_ERROR)
-			);
-		}
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest()
-				.body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-					ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		if (!projectService.checkProjectAuthorEmail(
-			project.get(), projectRequestDto.getAuthorEmail())) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body(new ErrorMessage(HttpStatus.FORBIDDEN.value(), ErrorCase.FORBIDDEN_ERROR));
-		}
-		projectService.updateProject(project.get(), projectRequestDto);
-		return ResponseEntity.ok().build();
-	}
+    return ResponseEntity.ok(projectService.getProjectDetail(project));
+  }
 
-	@DeleteMapping("/projects/{id}")
-	public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
-		Optional<Project> project = projectService.getProject(id);
-		if (!project.isPresent()) {
-			return ResponseEntity.badRequest().body(new ErrorMessage(HttpStatus.BAD_REQUEST.value(),
-				ErrorCase.NO_SUCH_PROJECT_ERROR));
-		}
-		projectService.deleteProject(project.get());
-		projectService.deleteProjectImage(project.get());
-		return ResponseEntity.noContent().build();
-	}
+  @PatchMapping("/projects/{id}/image")
+  public ResponseEntity<Object> updateProjectImage(
+      @RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+    if (multipartFile.isEmpty()) {
+      throw new EmptyFileException();
+    }
 
-	@GetMapping("/projects/list")
-	public ResponseEntity<Object> getProjectsList(final Pageable pageable,
-		@RequestParam(required = false) String category,
-		@RequestParam(required = false) String recruitmentField,
-		@RequestParam(required = false) String region,
-		@RequestParam(required = false) String projectSection,
-		@RequestParam(required = false) String keyword) {
-		return ResponseEntity.ok(
-			projectService.getProjectsList(pageable, category, recruitmentField, region,
-				projectSection, keyword));
-	}
+    File convertedFile = uploaderService.convert(multipartFile);
+    if (convertedFile == null) {
+      throw new FileConvertException();
+    }
+    if (!uploaderService.isValidExtension(convertedFile)) {
+      throw new InvalidFileException();
+    }
 
-	private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
-		return projectRequestDto.getAuthorEmail() != null &&
-			projectRequestDto.getTitle() != null &&
-			projectRequestDto.getContent() != null &&
-			projectRequestDto.getCategory() != null &&
-			projectRequestDto.getRecruitmentField() != null &&
-			projectRequestDto.getProjectSection() != null &&
-			projectRequestDto.getRegion() != null &&
-			projectRequestDto.getProjectTags() != null;
-	}
+    String result = projectService.updateProjectImage(convertedFile, project);
+    return ResponseEntity.created(URI.create(result)).build();
+  }
+
+  @DeleteMapping("/projects/{id}/image")
+  public ResponseEntity<Object> deleteProjectImage(@PathVariable Long id) {
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+
+    projectService.deleteProjectImage(project);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/projects/{id}")
+  public ResponseEntity<Object> updateProject(@PathVariable Long id,
+      @RequestBody ProjectRequestDto projectRequestDto) {
+    if (!isRequestBodyValid(projectRequestDto)) {
+      throw new InvalidFieldException();
+    }
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+    if (!project.authorCheck(projectRequestDto.getAuthorEmail())) {
+      throw new InvalidAccessException();
+    }
+
+    projectService.updateProject(project, projectRequestDto);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/projects/{id}")
+  public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
+    Project project = projectService.getProject(id)
+        .orElseThrow(NoProjectException::new);
+
+    projectService.deleteProject(project);
+    projectService.deleteProjectImage(project);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/projects/list")
+  public ResponseEntity<Object> getProjectsList(final Pageable pageable,
+      @RequestParam(required = false) String category,
+      @RequestParam(required = false) String recruitmentField,
+      @RequestParam(required = false) String region,
+      @RequestParam(required = false) String projectSection,
+      @RequestParam(required = false) String keyword) {
+    return ResponseEntity.ok(
+        projectService.getProjectsList(pageable, category, recruitmentField, region,
+            projectSection, keyword));
+  }
+
+  private boolean isRequestBodyValid(ProjectRequestDto projectRequestDto) {
+    return projectRequestDto.getAuthorEmail() != null &&
+        projectRequestDto.getTitle() != null &&
+        projectRequestDto.getContent() != null &&
+        projectRequestDto.getCategory() != null &&
+        projectRequestDto.getRecruitmentField() != null &&
+        projectRequestDto.getProjectSection() != null &&
+        projectRequestDto.getRegion() != null &&
+        projectRequestDto.getProjectTags() != null;
+  }
 }
