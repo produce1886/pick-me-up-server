@@ -10,11 +10,11 @@ cache:
   - "$HOME/.gradle"
 script: "./gradlew clean build -x test"
 before_install:
-- openssl aes-256-cbc -K $encrypted_56b29222f5a0_key -iv $encrypted_56b29222f5a0_iv
-  -in src/main/resources/application.tar.enc -out src/main/resources/application.tar
-  -d
 - openssl aes-256-cbc -K $encrypted_5d95ec7b371e_key -iv $encrypted_5d95ec7b371e_iv
   -in src/main/resources/application-aws.tar.enc -out src/main/resources/application-aws.tar
+  -d
+- openssl aes-256-cbc -K $encrypted_56b29222f5a0_key -iv $encrypted_56b29222f5a0_iv
+  -in src/main/resources/application.tar.enc -out src/main/resources/application.tar
   -d
 - tar vxf src/main/resources/application.tar
 - tar vxf src/main/resources/application-aws.tar
