@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: decrpt secret file
-        run: ./deploy-aws-secret.sh
+        run: ./decrypt-aws-secret.sh
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
 
