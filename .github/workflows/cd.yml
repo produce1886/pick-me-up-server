@@ -1,0 +1,46 @@
+name: CD with AWS CodeDeploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: deploy onto Gradle
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: decrpt secret file
+        run: ./decrypt-aws-secret.sh
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+
+      - name: setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: grant gradlew execute permission
+        run: chmod +x ./gradlew
+
+      - name: make build file
+        run: ./gradlew bootJar
+
+      - name: configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: upload S3
+        run: aws deploy push --application-name pick-me-up-server --description "This is a revision for the application pickmeup" --s3-location s3://pick-me-up-storage/build.zip --source .
+
+      - name: create deployment using by CodeDeploy
+        run: aws deploy create-deployment --application-name pick-me-up-server --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name pick-me-up-server-deploy --s3-location bucket=pick-me-up-storage,bundleType=zip,key=build.zip

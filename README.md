@@ -1,4 +1,5 @@
-# pick-me-up-server [![Build Status](https://www.travis-ci.org/produce1886/pick-me-up-server.svg?branch=main)](https://www.travis-ci.org/produce1886/pick-me-up-server)
+# pick-me-up-server
+![Build Status](https://github.com/produce1886/pick-me-up-server/actions/workflows/ci.yml/badge.svg) ![Build Status](https://github.com/produce1886/pick-me-up-server/actions/workflows/cd.yml/badge.svg)
 
 ## commit message convention
 서로 다른 부분 코드만을 보니까 서로의 코드를 볼 때 힘드니 작게 커밋을 해주는 게 좋을 것 같아요  
