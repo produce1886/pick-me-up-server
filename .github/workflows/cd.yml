@@ -41,7 +41,7 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: upload S3
-        run: aws deploy push --application-name pick-me-up-server --description "This is a revision for the application pickmeup" --s3-location s3://picke-me-up-storage/build.zip --source .
+        run: aws deploy push --application-name pick-me-up-server --description "This is a revision for the application pickmeup" --s3-location s3://pick-me-up-storage/build.zip --source .
 
       - name: create deployment using by CodeDeploy
         run: aws deploy create-deployment --application-name pick-me-up-server --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name pick-me-up-server-deploy --s3-location bucket=pick-me-up-storage,bundleType=zip,key=build.zip
