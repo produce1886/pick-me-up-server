@@ -1,8 +1,7 @@
 name: CD with AWS CodeDeploy
 
 on:
-  ## TODO push로 바꾸기
-  pull_request:
+  push:
     branches: [main]
 
 jobs:
