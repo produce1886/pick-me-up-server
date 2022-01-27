@@ -18,19 +18,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "project_has_tag")
 @NoArgsConstructor
 public class ProjectHasTag {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@ManyToOne
-	@JoinColumn(name = "project_id")
-	private Project project;
-	@ManyToOne
-	@JoinColumn(name = "tag_id")
-	private Tag projectTag;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag projectTag;
 
-	@Builder
-	public ProjectHasTag(Project project, Tag tag) {
-		this.project = project;
-		this.projectTag = tag;
-	}
+    @Builder
+    public ProjectHasTag(Project project, Tag tag) {
+        this.project = project;
+        this.projectTag = tag;
+    }
 }

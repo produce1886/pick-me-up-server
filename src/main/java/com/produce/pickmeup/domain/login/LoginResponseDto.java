@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class LoginResponseDto {
-	private final long id;
-	private final String username;
-	private final String email;
-	private final String image;
+    private final long id;
+    private final String username;
+    private final String email;
+    private final String image;
 }

@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class PortfolioImageDto {
-	private final long id;
-	private final String image;
+    private final long id;
+    private final String image;
 }

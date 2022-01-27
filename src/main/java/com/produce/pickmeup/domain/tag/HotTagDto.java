@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class HotTagDto {
-	private final List<TagDto> tags;
+    private final List<TagDto> tags;
 }

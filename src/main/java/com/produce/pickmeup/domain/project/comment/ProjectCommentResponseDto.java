@@ -10,9 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ProjectCommentResponseDto {
-	private final Timestamp createdDate;
-	private final Timestamp modifiedDate;
-	private final Long id;
-	private final String content;
-	private final LoginResponseDto user;
+    private final Timestamp createdDate;
+    private final Timestamp modifiedDate;
+    private final Long id;
+    private final String content;
+    private final LoginResponseDto user;
 }

@@ -9,6 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class TagHistoryGroupByDto {
-	private final Tag tag;
-	private final Long score;
+    private final Tag tag;
+    private final Long score;
 }

@@ -19,68 +19,68 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ErrorHandler {
 
-  // NOT FOUND
-  @ExceptionHandler(NoUserException.class)
-  protected ResponseEntity<ErrorMessage> handleNoUserException(NoUserException e) {
-    return handle(HttpStatus.NOT_FOUND, e);
-  }
+    // NOT FOUND
+    @ExceptionHandler(NoUserException.class)
+    protected ResponseEntity<ErrorMessage> handleNoUserException(NoUserException e) {
+        return handle(HttpStatus.NOT_FOUND, e);
+    }
 
-  @ExceptionHandler(NoPortfolioException.class)
-  protected ResponseEntity<ErrorMessage> handleNoPortfolioException(NoPortfolioException e) {
-    return handle(HttpStatus.NOT_FOUND, e);
-  }
+    @ExceptionHandler(NoPortfolioException.class)
+    protected ResponseEntity<ErrorMessage> handleNoPortfolioException(NoPortfolioException e) {
+        return handle(HttpStatus.NOT_FOUND, e);
+    }
 
-  @ExceptionHandler(NoProjectException.class)
-  protected ResponseEntity<ErrorMessage> handleNoProjectException(NoProjectException e) {
-    return handle(HttpStatus.NOT_FOUND, e);
-  }
+    @ExceptionHandler(NoProjectException.class)
+    protected ResponseEntity<ErrorMessage> handleNoProjectException(NoProjectException e) {
+        return handle(HttpStatus.NOT_FOUND, e);
+    }
 
-  @ExceptionHandler(NoCommentException.class)
-  protected ResponseEntity<ErrorMessage> handleNoCommentException(NoCommentException e) {
-    return handle(HttpStatus.NOT_FOUND, e);
-  }
+    @ExceptionHandler(NoCommentException.class)
+    protected ResponseEntity<ErrorMessage> handleNoCommentException(NoCommentException e) {
+        return handle(HttpStatus.NOT_FOUND, e);
+    }
 
-  @ExceptionHandler(NoImageException.class)
-  protected ResponseEntity<ErrorMessage> handleNoImageException(NoImageException e) {
-    return handle(HttpStatus.NOT_FOUND, e);
-  }
+    @ExceptionHandler(NoImageException.class)
+    protected ResponseEntity<ErrorMessage> handleNoImageException(NoImageException e) {
+        return handle(HttpStatus.NOT_FOUND, e);
+    }
 
-  // FILE
-  @ExceptionHandler(EmptyFileException.class)
-  protected ResponseEntity<ErrorMessage> handleEmptyFileException(EmptyFileException e) {
-    return handle(HttpStatus.BAD_REQUEST, e);
-  }
+    // FILE
+    @ExceptionHandler(EmptyFileException.class)
+    protected ResponseEntity<ErrorMessage> handleEmptyFileException(EmptyFileException e) {
+        return handle(HttpStatus.BAD_REQUEST, e);
+    }
 
-  @ExceptionHandler(FileConvertException.class)
-  protected ResponseEntity<ErrorMessage> handleFileConvertException(FileConvertException e) {
-    return handle(HttpStatus.INTERNAL_SERVER_ERROR, e);
-  }
+    @ExceptionHandler(FileConvertException.class)
+    protected ResponseEntity<ErrorMessage> handleFileConvertException(FileConvertException e) {
+        return handle(HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
 
-  @ExceptionHandler(InvalidFileException.class)
-  protected ResponseEntity<ErrorMessage> handleInvalidFileException(InvalidFileException e) {
-    return handle(HttpStatus.BAD_REQUEST, e);
-  }
+    @ExceptionHandler(InvalidFileException.class)
+    protected ResponseEntity<ErrorMessage> handleInvalidFileException(InvalidFileException e) {
+        return handle(HttpStatus.BAD_REQUEST, e);
+    }
 
-  // INVALID REQUEST
-  @ExceptionHandler(InvalidAccessException.class)
-  protected ResponseEntity<ErrorMessage> handleInvalidAccessException(InvalidAccessException e) {
-    return handle(HttpStatus.FORBIDDEN, e);
-  }
+    // INVALID REQUEST
+    @ExceptionHandler(InvalidAccessException.class)
+    protected ResponseEntity<ErrorMessage> handleInvalidAccessException(InvalidAccessException e) {
+        return handle(HttpStatus.FORBIDDEN, e);
+    }
 
-  @ExceptionHandler(InvalidFieldException.class)
-  protected ResponseEntity<ErrorMessage> handleInvalidFieldException(InvalidFieldException e) {
-    return handle(HttpStatus.BAD_REQUEST, e);
-  }
+    @ExceptionHandler(InvalidFieldException.class)
+    protected ResponseEntity<ErrorMessage> handleInvalidFieldException(InvalidFieldException e) {
+        return handle(HttpStatus.BAD_REQUEST, e);
+    }
 
-  @ExceptionHandler(RuntimeException.class)
-  protected ResponseEntity<ErrorMessage> handleRuntimeException(RuntimeException e) {
-    return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(new ErrorMessage("UNKNOWN_ERROR", "알 수 없는 에러가 발생하였습니다. "));
-  }
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<ErrorMessage> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorMessage("UNKNOWN_ERROR", "알 수 없는 에러가 발생하였습니다. "));
+    }
 
-  private ResponseEntity<ErrorMessage> handle(HttpStatus status, CustomException e) {
-    return ResponseEntity.status(status).body(e.errorMessage());
-  }
+    private ResponseEntity<ErrorMessage> handle(HttpStatus status, CustomException e) {
+        return ResponseEntity.status(status).body(e.errorMessage());
+    }
 }
 

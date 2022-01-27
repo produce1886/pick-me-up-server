@@ -20,22 +20,22 @@ import org.springframework.data.annotation.CreatedDate;
 @Table(name = "tag_history")
 @NoArgsConstructor
 public class TagHistory {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@ManyToOne
-	@JoinColumn(name = "tag_id")
-	private Tag tag;
-	@Column(updatable = false)
-	@CreatedDate
-	private Timestamp createdDate;
-	@Column(nullable = false)
-	private long score;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+    @Column(updatable = false)
+    @CreatedDate
+    private Timestamp createdDate;
+    @Column(nullable = false)
+    private long score;
 
-	@Builder
-	public TagHistory(Tag tag, long score, Timestamp timestamp) {
-		this.tag = tag;
-		this.score = score;
-		this.createdDate = timestamp;
-	}
+    @Builder
+    public TagHistory(Tag tag, long score, Timestamp timestamp) {
+        this.tag = tag;
+        this.score = score;
+        this.createdDate = timestamp;
+    }
 }

@@ -8,6 +8,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class PortfolioCommentRequestDto {
-	private final String authorEmail;
-	private final String content;
+    private final String authorEmail;
+    private final String content;
 }

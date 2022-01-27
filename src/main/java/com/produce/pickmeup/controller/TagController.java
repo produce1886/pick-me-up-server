@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @AllArgsConstructor
 public class TagController {
-	private final TagService tagService;
+    private final TagService tagService;
 
-	@GetMapping("/tags")
-	public ResponseEntity<Object> getHotTagsList() {
-		return ResponseEntity.ok().body(tagService.getHotTagsList());
-	}
+    @GetMapping("/tags")
+    public ResponseEntity<Object> getHotTagsList() {
+        return ResponseEntity.ok().body(tagService.getHotTagsList());
+    }
 }

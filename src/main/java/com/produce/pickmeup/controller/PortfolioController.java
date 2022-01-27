@@ -34,133 +34,133 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @AllArgsConstructor
 public class PortfolioController {
-  private final UserService userService;
-  private final PortfolioService portfolioService;
-  private final S3Uploader uploaderService;
+    private final UserService userService;
+    private final PortfolioService portfolioService;
+    private final S3Uploader uploaderService;
 
-  // TODO replcae to @Valid
-  private boolean isRequestBodyValid(PortfolioRequestDto portfolioRequestDto) {
-    return portfolioRequestDto.getAuthorEmail() != null &&
-        portfolioRequestDto.getTitle() != null &&
-        portfolioRequestDto.getContent() != null &&
-        portfolioRequestDto.getCategory() != null &&
-        portfolioRequestDto.getRecruitmentField() != null &&
-        portfolioRequestDto.getPortfolioTags() != null;
-  }
-
-  @PostMapping("/portfolios")
-  public ResponseEntity<Object> addPortfolio(
-      @RequestBody PortfolioRequestDto portfolioRequestDto) {
-
-    if (!isRequestBodyValid(portfolioRequestDto)) {
-      throw new InvalidFieldException();
-    }
-    User author = userService.findByEmail(portfolioRequestDto.getAuthorEmail())
-        .orElseThrow(NoUserException::new);
-
-    String result = portfolioService.addPortfolio(portfolioRequestDto, author);
-    return ResponseEntity.created(URI.create("/portfolios/" + result)).build();
-  }
-
-  @GetMapping("/portfolios/{id}")
-  public ResponseEntity<Object> getPortfolioDetail(@PathVariable Long id) {
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-
-    return ResponseEntity.ok(portfolioService.getPortfolioDetail(portfolio));
-  }
-
-  @PutMapping("/portfolios/{id}")
-  public ResponseEntity<Object> updatePortfolio
-      (@PathVariable Long id, @RequestBody PortfolioRequestDto portfolioRequestDto) {
-
-    if (!isRequestBodyValid(portfolioRequestDto)) {
-      throw new InvalidFieldException();
-    }
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-    if (!portfolio.authorCheck(portfolioRequestDto.getAuthorEmail())) {
-      throw new InvalidAccessException();
+    // TODO replcae to @Valid
+    private boolean isRequestBodyValid(PortfolioRequestDto portfolioRequestDto) {
+        return portfolioRequestDto.getAuthorEmail() != null &&
+            portfolioRequestDto.getTitle() != null &&
+            portfolioRequestDto.getContent() != null &&
+            portfolioRequestDto.getCategory() != null &&
+            portfolioRequestDto.getRecruitmentField() != null &&
+            portfolioRequestDto.getPortfolioTags() != null;
     }
 
-    portfolioService.updatePortfolio(portfolio, portfolioRequestDto);
-    return ResponseEntity.ok().build();
-  }
+    @PostMapping("/portfolios")
+    public ResponseEntity<Object> addPortfolio(
+        @RequestBody PortfolioRequestDto portfolioRequestDto) {
 
-  @DeleteMapping("/portfolios/{id}")
-  public ResponseEntity<Object> deletePortfolio(@PathVariable Long id) {
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
+        if (!isRequestBodyValid(portfolioRequestDto)) {
+            throw new InvalidFieldException();
+        }
+        User author = userService.findByEmail(portfolioRequestDto.getAuthorEmail())
+            .orElseThrow(NoUserException::new);
 
-    portfolio.getPortfolioImages()
-        .stream().map(PortfolioImage::getId)
-        .forEach(portfolioService::deletePortfolioImageFromS3);
-    portfolioService.deletePortfolio(portfolio);
-
-    return ResponseEntity.noContent().build();
-  }
-
-  @PatchMapping("/portfolios/image/{id}")
-  public ResponseEntity<Object> updatePortfolioImage(
-      @RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
-
-    PortfolioImage portfolioImage = portfolioService.getPortfolioImage(id)
-        .orElseThrow(NoImageException::new);
-    if (multipartFile.isEmpty()) {
-      throw new InvalidFileException();
+        String result = portfolioService.addPortfolio(portfolioRequestDto, author);
+        return ResponseEntity.created(URI.create("/portfolios/" + result)).build();
     }
 
-    File convertedFile = uploaderService.convert(multipartFile);
-    if (convertedFile == null) {
-      throw new FileConvertException();
-    }
-    if (!uploaderService.isValidExtension(convertedFile)) {
-      throw new InvalidFileException();
-    }
+    @GetMapping("/portfolios/{id}")
+    public ResponseEntity<Object> getPortfolioDetail(@PathVariable Long id) {
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
 
-    String result = portfolioService.updatePortfolioImage(convertedFile, portfolioImage);
-    return ResponseEntity.created(URI.create(result)).build();
-  }
-
-  @DeleteMapping("/portfolios/image/{id}")
-  public ResponseEntity<Object> deletePortfolioImage(@PathVariable Long id) {
-    PortfolioImage portfolioImage = portfolioService.getPortfolioImage(id)
-        .orElseThrow(NoImageException::new);
-
-    portfolioService.deletePortfolioImageFromDB(portfolioImage);
-    portfolioService.deletePortfolioImageFromS3(id);
-    return ResponseEntity.noContent().build();
-  }
-
-  @PostMapping("/portfolios/{id}/image")
-  public ResponseEntity<Object> addPortfolioImage(
-      @RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
-
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-
-    if (multipartFile.isEmpty()) {
-      throw new EmptyFileException();
+        return ResponseEntity.ok(portfolioService.getPortfolioDetail(portfolio));
     }
 
-    File convertedFile = uploaderService.convert(multipartFile);
-    if (convertedFile == null) {
-      throw new FileConvertException();
-    }
-    if (!uploaderService.isValidExtension(convertedFile)) {
-      throw new InvalidFileException();
+    @PutMapping("/portfolios/{id}")
+    public ResponseEntity<Object> updatePortfolio
+        (@PathVariable Long id, @RequestBody PortfolioRequestDto portfolioRequestDto) {
+
+        if (!isRequestBodyValid(portfolioRequestDto)) {
+            throw new InvalidFieldException();
+        }
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
+        if (!portfolio.authorCheck(portfolioRequestDto.getAuthorEmail())) {
+            throw new InvalidAccessException();
+        }
+
+        portfolioService.updatePortfolio(portfolio, portfolioRequestDto);
+        return ResponseEntity.ok().build();
     }
 
-    String result = portfolioService.addPortfolioImage(convertedFile, portfolio);
-    return ResponseEntity.created(URI.create(result)).build();
-  }
+    @DeleteMapping("/portfolios/{id}")
+    public ResponseEntity<Object> deletePortfolio(@PathVariable Long id) {
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
 
-  @GetMapping("/portfolios/list")
-  public ResponseEntity<Object> getPortfoliosList(final Pageable pageable,
-      @RequestParam(required = false) String category,
-      @RequestParam(required = false) String recruitmentField,
-      @RequestParam(required = false) String keyword) {
-    return ResponseEntity.ok(
-        portfolioService.getPortfoliosList(pageable, category, recruitmentField, keyword));
-  }
+        portfolio.getPortfolioImages()
+            .stream().map(PortfolioImage::getId)
+            .forEach(portfolioService::deletePortfolioImageFromS3);
+        portfolioService.deletePortfolio(portfolio);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/portfolios/image/{id}")
+    public ResponseEntity<Object> updatePortfolioImage(
+        @RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
+
+        PortfolioImage portfolioImage = portfolioService.getPortfolioImage(id)
+            .orElseThrow(NoImageException::new);
+        if (multipartFile.isEmpty()) {
+            throw new InvalidFileException();
+        }
+
+        File convertedFile = uploaderService.convert(multipartFile);
+        if (convertedFile == null) {
+            throw new FileConvertException();
+        }
+        if (!uploaderService.isValidExtension(convertedFile)) {
+            throw new InvalidFileException();
+        }
+
+        String result = portfolioService.updatePortfolioImage(convertedFile, portfolioImage);
+        return ResponseEntity.created(URI.create(result)).build();
+    }
+
+    @DeleteMapping("/portfolios/image/{id}")
+    public ResponseEntity<Object> deletePortfolioImage(@PathVariable Long id) {
+        PortfolioImage portfolioImage = portfolioService.getPortfolioImage(id)
+            .orElseThrow(NoImageException::new);
+
+        portfolioService.deletePortfolioImageFromDB(portfolioImage);
+        portfolioService.deletePortfolioImageFromS3(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/portfolios/{id}/image")
+    public ResponseEntity<Object> addPortfolioImage(
+        @RequestParam("image") MultipartFile multipartFile, @PathVariable Long id) {
+
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
+
+        if (multipartFile.isEmpty()) {
+            throw new EmptyFileException();
+        }
+
+        File convertedFile = uploaderService.convert(multipartFile);
+        if (convertedFile == null) {
+            throw new FileConvertException();
+        }
+        if (!uploaderService.isValidExtension(convertedFile)) {
+            throw new InvalidFileException();
+        }
+
+        String result = portfolioService.addPortfolioImage(convertedFile, portfolio);
+        return ResponseEntity.created(URI.create(result)).build();
+    }
+
+    @GetMapping("/portfolios/list")
+    public ResponseEntity<Object> getPortfoliosList(final Pageable pageable,
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) String recruitmentField,
+        @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(
+            portfolioService.getPortfoliosList(pageable, category, recruitmentField, keyword));
+    }
 }
