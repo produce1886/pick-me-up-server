@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class PickmeupApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PickmeupApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PickmeupApplication.class, args);
+    }
 
 }

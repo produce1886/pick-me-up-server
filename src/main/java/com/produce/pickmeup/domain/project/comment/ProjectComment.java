@@ -22,66 +22,66 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Table(name = "project_comments")
 @NoArgsConstructor
 public class ProjectComment {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@ManyToOne
-	@JoinColumn(name = "project_id")
-	private Project project;
-	@Column(updatable = false)
-	@CreatedDate
-	private Timestamp createdDate;
-	@Column
-	@LastModifiedDate
-	private Timestamp modifiedDate;
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User author;
-	@Column(nullable = false)
-	private String authorEmail;
-	@Column(nullable = false)
-	private String content;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+    @Column(updatable = false)
+    @CreatedDate
+    private Timestamp createdDate;
+    @Column
+    @LastModifiedDate
+    private Timestamp modifiedDate;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
+    @Column(nullable = false)
+    private String authorEmail;
+    @Column(nullable = false)
+    private String content;
 
-	@Builder
-	public ProjectComment(String content, User author, Project project) {
-		this.content = content;
-		this.author = author;
-		this.authorEmail = author.getEmail();
-		this.project = project;
-		this.createdDate = new Timestamp(System.currentTimeMillis());
-		this.modifiedDate = new Timestamp(System.currentTimeMillis());
-	}
+    @Builder
+    public ProjectComment(String content, User author, Project project) {
+        this.content = content;
+        this.author = author;
+        this.authorEmail = author.getEmail();
+        this.project = project;
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.modifiedDate = new Timestamp(System.currentTimeMillis());
+    }
 
-	public ProjectCommentResponseDto toResponseDto() {
-		return ProjectCommentResponseDto.builder()
-			.id(id)
-			.createdDate(createdDate)
-			.modifiedDate(modifiedDate)
-			.content(content)
-			.user(author.toResponseDto())
-			.build();
-	}
+    public ProjectCommentResponseDto toResponseDto() {
+        return ProjectCommentResponseDto.builder()
+            .id(id)
+            .createdDate(createdDate)
+            .modifiedDate(modifiedDate)
+            .content(content)
+            .user(author.toResponseDto())
+            .build();
+    }
 
-	public ProjectCommentDetailResponseDto toDetailResponseDto() {
-		return ProjectCommentDetailResponseDto.builder()
-			.id(id)
-			.content(content)
-			.authorEmail(authorEmail)
-			.createdDate(createdDate)
-			.modifiedDate(modifiedDate)
-			.build();
-	}
+    public ProjectCommentDetailResponseDto toDetailResponseDto() {
+        return ProjectCommentDetailResponseDto.builder()
+            .id(id)
+            .content(content)
+            .authorEmail(authorEmail)
+            .createdDate(createdDate)
+            .modifiedDate(modifiedDate)
+            .build();
+    }
 
-	public void updateContent(ProjectCommentRequestDto projectCommentUpdateDto) {
-		this.content = projectCommentUpdateDto.getContent();
-		this.modifiedDate = new Timestamp(System.currentTimeMillis());
-	}
+    public void updateContent(ProjectCommentRequestDto projectCommentUpdateDto) {
+        this.content = projectCommentUpdateDto.getContent();
+        this.modifiedDate = new Timestamp(System.currentTimeMillis());
+    }
 
-	public boolean included(Long projectId) {
-		return this.project.getId() == projectId;
-	}
+    public boolean included(Long projectId) {
+        return this.project.getId() == projectId;
+    }
 
-	public boolean authorCheck(String authorEmail) {
-		return this.authorEmail.equals(authorEmail);
-	}
+    public boolean authorCheck(String authorEmail) {
+        return this.authorEmail.equals(authorEmail);
+    }
 }

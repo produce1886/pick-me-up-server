@@ -26,68 +26,68 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @AllArgsConstructor
 public class PortfolioCommentController {
-  private final PortfolioService portfolioService;
-  private final PortfolioCommentService commentService;
-  private final UserService userService;
+    private final PortfolioService portfolioService;
+    private final PortfolioCommentService commentService;
+    private final UserService userService;
 
-  @PostMapping("/portfolios/{id}/comments")
-  public ResponseEntity<URI> addPortfolioComment(@PathVariable Long id, @RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
+    @PostMapping("/portfolios/{id}/comments")
+    public ResponseEntity<URI> addPortfolioComment(@PathVariable Long id, @RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
 
-    User author = userService.findByEmail(portfolioCommentRequestDto.getAuthorEmail())
-        .orElseThrow(NoUserException::new);
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
+        User author = userService.findByEmail(portfolioCommentRequestDto.getAuthorEmail())
+            .orElseThrow(NoUserException::new);
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
 
-    String result = commentService.addPortfolioComment(author, portfolio, portfolioCommentRequestDto);
-    return ResponseEntity.created(URI.create("/portfolios/" + id + "/comments/" + result)).build();
-  }
-
-  @GetMapping("/portfolios/{id}/comments/{commentId}")
-  public ResponseEntity<Object> getPortfolioComment(@PathVariable Long id, @PathVariable @NonNull Long commentId) {
-
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-    PortfolioComment comment = commentService.getPortfolioComment(commentId)
-        .orElseThrow(NoCommentException::new);
-    if (!comment.included(portfolio.getId())) {
-      throw new InvalidAccessException();
+        String result = commentService.addPortfolioComment(author, portfolio, portfolioCommentRequestDto);
+        return ResponseEntity.created(URI.create("/portfolios/" + id + "/comments/" + result)).build();
     }
 
-    return ResponseEntity.ok(commentService.getCommentDetail(comment));
-  }
+    @GetMapping("/portfolios/{id}/comments/{commentId}")
+    public ResponseEntity<Object> getPortfolioComment(@PathVariable Long id, @PathVariable @NonNull Long commentId) {
 
-  @PutMapping("/portfolios/{id}/comments/{commentId}")
-  public ResponseEntity<Object> updatePortfolioComment(
-      @PathVariable Long id, @PathVariable Long commentId,
-      @RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
+        PortfolioComment comment = commentService.getPortfolioComment(commentId)
+            .orElseThrow(NoCommentException::new);
+        if (!comment.included(portfolio.getId())) {
+            throw new InvalidAccessException();
+        }
 
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-    PortfolioComment comment = commentService.getPortfolioComment(commentId)
-        .orElseThrow(NoCommentException::new);
-    if (!comment.included(portfolio.getId()) |
-        !comment.authorCheck(portfolioCommentRequestDto.getAuthorEmail())) {
-      throw new InvalidAccessException();
+        return ResponseEntity.ok(commentService.getCommentDetail(comment));
     }
 
-    commentService.updatePortfolioComment(comment, portfolioCommentRequestDto);
-    return ResponseEntity.ok().build();
-  }
+    @PutMapping("/portfolios/{id}/comments/{commentId}")
+    public ResponseEntity<Object> updatePortfolioComment(
+        @PathVariable Long id, @PathVariable Long commentId,
+        @RequestBody PortfolioCommentRequestDto portfolioCommentRequestDto) {
 
-  @DeleteMapping("/portfolios/{id}/comments/{commentId}")
-  public ResponseEntity<Object> deletePortfolioComment(@PathVariable Long id, @PathVariable Long commentId) {
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
+        PortfolioComment comment = commentService.getPortfolioComment(commentId)
+            .orElseThrow(NoCommentException::new);
+        if (!comment.included(portfolio.getId()) |
+            !comment.authorCheck(portfolioCommentRequestDto.getAuthorEmail())) {
+            throw new InvalidAccessException();
+        }
 
-    Portfolio portfolio = portfolioService.getPortfolio(id)
-        .orElseThrow(NoPortfolioException::new);
-    PortfolioComment comment = commentService.getPortfolioComment(commentId)
-        .orElseThrow(NoCommentException::new);
-    if (!comment.included(portfolio.getId())) {
-      throw new InvalidAccessException();
+        commentService.updatePortfolioComment(comment, portfolioCommentRequestDto);
+        return ResponseEntity.ok().build();
     }
 
-    commentService.deleteCommentDetail(commentId);
-    // TODO remove comment num col in portfolio entity
-    portfolio.downCommentsNum();
-    return ResponseEntity.noContent().build();
-  }
+    @DeleteMapping("/portfolios/{id}/comments/{commentId}")
+    public ResponseEntity<Object> deletePortfolioComment(@PathVariable Long id, @PathVariable Long commentId) {
+
+        Portfolio portfolio = portfolioService.getPortfolio(id)
+            .orElseThrow(NoPortfolioException::new);
+        PortfolioComment comment = commentService.getPortfolioComment(commentId)
+            .orElseThrow(NoCommentException::new);
+        if (!comment.included(portfolio.getId())) {
+            throw new InvalidAccessException();
+        }
+
+        commentService.deleteCommentDetail(commentId);
+        // TODO remove comment num col in portfolio entity
+        portfolio.downCommentsNum();
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -9,15 +9,15 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class UserUpdateDto {
-	private final String username;
-	private final String introduce;
-	private final Date birth;
-	private final String university;
-	private final String major;
-	private final String region;
-	private final String interests;
-	private final boolean isBirthPublic;
-	private final boolean isUniversityPublic;
-	private final boolean isRegionPublic;
-	private final boolean isInterestsPublic;
+    private final String username;
+    private final String introduce;
+    private final Date birth;
+    private final String university;
+    private final String major;
+    private final String region;
+    private final String interests;
+    private final boolean isBirthPublic;
+    private final boolean isUniversityPublic;
+    private final boolean isRegionPublic;
+    private final boolean isInterestsPublic;
 }

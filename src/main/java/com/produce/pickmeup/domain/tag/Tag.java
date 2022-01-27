@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,36 +20,36 @@ import lombok.NoArgsConstructor;
 @Table(name = "tags")
 @NoArgsConstructor
 public class Tag {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@Column(nullable = false)
-	private String tagName;
-	@OneToMany(mappedBy = "projectTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private final List<ProjectHasTag> projects = new ArrayList<>();
-	@OneToMany(mappedBy = "portfolioTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private final List<PortfolioHasTag> portfolios = new ArrayList<>();
-	@Column
-	private long currentScore;
+    @OneToMany(mappedBy = "projectTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<ProjectHasTag> projects = new ArrayList<>();
+    @OneToMany(mappedBy = "portfolioTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<PortfolioHasTag> portfolios = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(nullable = false)
+    private String tagName;
+    @Column
+    private long currentScore;
 
-	@Builder
-	public Tag(String tagName) {
-		this.tagName = tagName;
-		this.currentScore = 0;
-	}
+    @Builder
+    public Tag(String tagName) {
+        this.tagName = tagName;
+        this.currentScore = 0;
+    }
 
-	public TagDto toTagDto() {
-		return TagDto.builder()
-			.id(id)
-			.tagName(tagName)
-			.build();
-	}
+    public TagDto toTagDto() {
+        return TagDto.builder()
+            .id(id)
+            .tagName(tagName)
+            .build();
+    }
 
-	public void resetScore() {
-		this.currentScore = 0;
-	}
+    public void resetScore() {
+        this.currentScore = 0;
+    }
 
-	public void upCurrentScore(int score) {
-		this.currentScore += score;
-	}
+    public void upCurrentScore(int score) {
+        this.currentScore += score;
+    }
 }

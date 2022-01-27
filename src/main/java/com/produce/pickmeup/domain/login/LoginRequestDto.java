@@ -7,15 +7,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginRequestDto {
-	private final String email;
-	private final String username;
-	private final String image;
+    private final String email;
+    private final String username;
+    private final String image;
 
-	public User toEntity() {
-		return User.builder()
-			.email(email)
-			.username(username)
-			.image(image)
-			.build();
-	}
+    public User toEntity() {
+        return User.builder()
+            .email(email)
+            .username(username)
+            .image(image)
+            .build();
+    }
 }

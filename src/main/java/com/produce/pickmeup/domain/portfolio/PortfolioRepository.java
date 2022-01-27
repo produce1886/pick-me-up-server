@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long>, JpaSpecificationExecutor<Portfolio> {
-	Page<Portfolio> findAll(Specification<Portfolio> specification, Pageable pageable);
+    Page<Portfolio> findAll(Specification<Portfolio> specification, Pageable pageable);
 }
 

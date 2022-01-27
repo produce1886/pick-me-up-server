@@ -22,77 +22,77 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UserService {
-	private final String PROFILE_IMAGE_PATH = "profile-image";
+    private final String PROFILE_IMAGE_PATH = "profile-image";
 
-	private final PortfolioService portfolioService;
-	private final ProjectService projectService;
-	private final UserRepository userRepository;
-	private final S3Uploader s3Uploader;
+    private final PortfolioService portfolioService;
+    private final ProjectService projectService;
+    private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
-	private User addUser(LoginRequestDto userRequestDto) {
-		return userRepository.save(userRequestDto.toEntity());
-	}
+    private User addUser(LoginRequestDto userRequestDto) {
+        return userRepository.save(userRequestDto.toEntity());
+    }
 
-	@Transactional
-	public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-		User user = userRepository.findByEmail(loginRequestDto.getEmail())
-			.orElseGet(() -> addUser(loginRequestDto));
-		return user.toResponseDto();
-	}
+    @Transactional
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+            .orElseGet(() -> addUser(loginRequestDto));
+        return user.toResponseDto();
+    }
 
-	@Transactional
-	public String updateUserImage(File convertedFile, User user) {
-		String result = s3Uploader.upload(convertedFile, PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
-		user.updateImage(result);
-		return result;
-	}
+    @Transactional
+    public String updateUserImage(File convertedFile, User user) {
+        String result = s3Uploader.upload(convertedFile, PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
+        user.updateImage(result);
+        return result;
+    }
 
-	@Transactional
-	public void deleteUserImage(User user) {
-		s3Uploader.delete(PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
-		user.updateImage("");
-	}
+    @Transactional
+    public void deleteUserImage(User user) {
+        s3Uploader.delete(PROFILE_IMAGE_PATH, String.valueOf(user.getId()));
+        user.updateImage("");
+    }
 
-	@Transactional
-	public Optional<User> findById(Long id) {
-		return userRepository.findById(id);
-	}
+    @Transactional
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 
-	@Transactional
-	public Optional<User> findByEmail(String email) {
-		return userRepository.findByEmail(email);
-	}
+    @Transactional
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
-	@Transactional
-	public void updateUserInfo(User user, UserUpdateDto userUpdateDto) {
-		user.updateInfo(userUpdateDto);
-	}
+    @Transactional
+    public void updateUserInfo(User user, UserUpdateDto userUpdateDto) {
+        user.updateInfo(userUpdateDto);
+    }
 
-	@Transactional
-	public ProjectListResponseDto getUserProjects(User user) {
-		List<Project> projects = user.getProjectList();
-		List<ProjectDto> projectDtoList = new ArrayList<>();
-		for (Project project : projects) {
-			projectDtoList.add(project.toProjectDto(
-				projectService.getProjectTagNames(project)));
-		}
-		return ProjectListResponseDto.builder()
-			.totalNum(projects.size())
-			.projectList(projectDtoList)
-			.build();
-	}
+    @Transactional
+    public ProjectListResponseDto getUserProjects(User user) {
+        List<Project> projects = user.getProjectList();
+        List<ProjectDto> projectDtoList = new ArrayList<>();
+        for (Project project : projects) {
+            projectDtoList.add(project.toProjectDto(
+                projectService.getProjectTagNames(project)));
+        }
+        return ProjectListResponseDto.builder()
+            .totalNum(projects.size())
+            .projectList(projectDtoList)
+            .build();
+    }
 
-	@Transactional
-	public PortfolioListResponseDto getUserPortfolios(User user) {
-		List<Portfolio> portfolios = user.getPortfolioList();
-		List<PortfolioDto> portfolioDtoList = new ArrayList<>();
-		for (Portfolio portfolio : portfolios) {
-			portfolioDtoList.add(portfolio.toPortfolioDto(
-				portfolioService.getPortfolioTagNames(portfolio)));
-		}
-		return PortfolioListResponseDto.builder()
-			.totalNum(portfolios.size())
-			.portfolioList(portfolioDtoList)
-			.build();
-	}
+    @Transactional
+    public PortfolioListResponseDto getUserPortfolios(User user) {
+        List<Portfolio> portfolios = user.getPortfolioList();
+        List<PortfolioDto> portfolioDtoList = new ArrayList<>();
+        for (Portfolio portfolio : portfolios) {
+            portfolioDtoList.add(portfolio.toPortfolioDto(
+                portfolioService.getPortfolioTagNames(portfolio)));
+        }
+        return PortfolioListResponseDto.builder()
+            .totalNum(portfolios.size())
+            .portfolioList(portfolioDtoList)
+            .build();
+    }
 }

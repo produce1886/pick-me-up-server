@@ -1,12 +1,9 @@
 package com.produce.pickmeup.domain.user;
 
+import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
-import java.sql.Date;
 
 @Getter
 @AllArgsConstructor

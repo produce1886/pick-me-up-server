@@ -15,31 +15,31 @@ import org.springframework.stereotype.Repository;
 @Repository
 @AllArgsConstructor
 public class TagHistoryCustomRepositoryImpl implements TagHistoryCustomRepository {
-	private final EntityManager entityManager;
-	private final int LIMIT_TAG_COUNT = 10;
+    private final EntityManager entityManager;
+    private final int LIMIT_TAG_COUNT = 10;
 
-	@Override
-	public Stream<TagHistoryGroupByDto> findAllGroupBySumScore() {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<TagHistoryGroupByDto> query = builder.createQuery(TagHistoryGroupByDto.class);
-		Root<TagHistory> root = query.from(TagHistory.class);
+    @Override
+    public Stream<TagHistoryGroupByDto> findAllGroupBySumScore() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<TagHistoryGroupByDto> query = builder.createQuery(TagHistoryGroupByDto.class);
+        Root<TagHistory> root = query.from(TagHistory.class);
 
-		query.groupBy(root.get("tag"));
-		query.multiselect(root.get("tag"), builder.sum(root.get("score")));
-		query.orderBy(builder.desc(root.get("score")));
+        query.groupBy(root.get("tag"));
+        query.multiselect(root.get("tag"), builder.sum(root.get("score")));
+        query.orderBy(builder.desc(root.get("score")));
 
-		return entityManager.createQuery(query).getResultStream().limit(LIMIT_TAG_COUNT);
-	}
+        return entityManager.createQuery(query).getResultStream().limit(LIMIT_TAG_COUNT);
+    }
 
-	@Override
-	@Transactional
-	public void deleteOldScore(Timestamp standardTime) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaDelete<TagHistory> deleteQuery = builder.createCriteriaDelete(TagHistory.class);
-		Root<TagHistory> root = deleteQuery.from(TagHistory.class);
-		Predicate deleteCondition = builder
-			.lessThanOrEqualTo(root.get("createdDate"), standardTime);
-		deleteQuery.where(deleteCondition);
-		entityManager.createQuery(deleteQuery).executeUpdate();
-	}
+    @Override
+    @Transactional
+    public void deleteOldScore(Timestamp standardTime) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<TagHistory> deleteQuery = builder.createCriteriaDelete(TagHistory.class);
+        Root<TagHistory> root = deleteQuery.from(TagHistory.class);
+        Predicate deleteCondition = builder
+            .lessThanOrEqualTo(root.get("createdDate"), standardTime);
+        deleteQuery.where(deleteCondition);
+        entityManager.createQuery(deleteQuery).executeUpdate();
+    }
 }

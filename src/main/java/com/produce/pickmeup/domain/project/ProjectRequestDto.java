@@ -9,13 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ProjectRequestDto {
-	private final String title;
-	private final String authorEmail;
-	private final String content;
-	private final String category;
-	private final String recruitmentField;
-	private final String region;
-	private final String projectSection;
-	private final String image;
-	private final List<String> projectTags;
+    private final String title;
+    private final String authorEmail;
+    private final String content;
+    private final String category;
+    private final String recruitmentField;
+    private final String region;
+    private final String projectSection;
+    private final String image;
+    private final List<String> projectTags;
 }

@@ -5,14 +5,14 @@ import com.produce.pickmeup.error.ErrorMessage;
 
 public abstract class CustomException extends RuntimeException {
 
-  private final ErrorCase errorCase;
+    private final ErrorCase errorCase;
 
-  protected CustomException(ErrorCase errorCase) {
-    this.errorCase = errorCase;
-  }
+    protected CustomException(ErrorCase errorCase) {
+        this.errorCase = errorCase;
+    }
 
-  public ErrorMessage errorMessage() {
-    return ErrorMessage.of(errorCase.name(), errorCase.getMessage());
-  }
+    public ErrorMessage errorMessage() {
+        return ErrorMessage.of(errorCase.name(), errorCase.getMessage());
+    }
 }
 

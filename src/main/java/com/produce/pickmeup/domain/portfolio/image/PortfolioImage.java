@@ -18,27 +18,27 @@ import lombok.NoArgsConstructor;
 @Table(name = "portfolio_images")
 @NoArgsConstructor
 public class PortfolioImage {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@ManyToOne
-	@JoinColumn(name = "portfolio_id")
-	private Portfolio portfolio;
-	@Column
-	private String image;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    private Portfolio portfolio;
+    @Column
+    private String image;
 
-	@Builder
-	public PortfolioImage(String image, Portfolio portfolio) {
-		this.image = image;
-		this.portfolio = portfolio;
-	}
+    @Builder
+    public PortfolioImage(String image, Portfolio portfolio) {
+        this.image = image;
+        this.portfolio = portfolio;
+    }
 
-	public PortfolioImageDto toDto() {
-		return PortfolioImageDto.builder()
-			.id(id).image(image).build();
-	}
+    public PortfolioImageDto toDto() {
+        return PortfolioImageDto.builder()
+            .id(id).image(image).build();
+    }
 
-	public void updateImage(String imageUrl) {
-		this.image = imageUrl;
-	}
+    public void updateImage(String imageUrl) {
+        this.image = imageUrl;
+    }
 }

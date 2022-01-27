@@ -9,6 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ProjectListResponseDto {
-	private final int totalNum;
-	private final List<ProjectDto> projectList;
+    private final int totalNum;
+    private final List<ProjectDto> projectList;
 }
